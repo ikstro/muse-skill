@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lanework · Friday, 16:55.</title>
+<link rel="stylesheet" href="../lanework-ds.css">
+<style>
+  /* Layout and comp-only elements. DS classes are positioned here, never restyled. */
+  html, body { overflow-x: hidden; }
+  .hero { box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 52px 32px 40px;
+          display: grid; grid-template-columns: 42fr 58fr; gap: 32px; align-items: stretch; }
+  .left { display: flex; flex-direction: column; min-width: 0; }
+  .copy { margin-top: 48px; }
+  .copy .lw-h1 > span { display: block; }
+  .copy .lw-h1 .nw { display: block; white-space: nowrap; }
+  .act { display: flex; align-items: center; gap: 16px; margin-top: 28px; flex-wrap: wrap; }
+
+  .board { overflow: hidden; }
+  .ph { display: flex; justify-content: space-between; align-items: baseline; padding: 15px 16px 13px; border-bottom: 1px solid var(--lw-line); }
+  .pt { font: 600 15px/20px var(--lw-face); color: var(--lw-ink); }
+  .pm { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); }
+  .board .lw-row { border-top: 1px solid var(--lw-line); }
+  .board .rows .lw-row:first-child { border-top: 0; }
+  .tk { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .dt, .sm, .clk b { font-variant-numeric: tabular-nums; }
+
+  .sum { display: flex; flex-direction: column; min-width: 0; }
+  .sh { display: flex; justify-content: space-between; align-items: flex-start; padding: 18px 20px 16px; border-bottom: 1px solid var(--lw-line); }
+  .st { font: 600 17px/26px var(--lw-face); color: var(--lw-ink); }
+  .sto { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); margin-top: 2px; }
+  .clk { display: inline-flex; align-items: center; gap: 7px; font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); padding-top: 3px; }
+  .clk svg { width: 16px; height: 16px; display: block; }
+  .clk b { font-weight: 600; color: var(--lw-ink); }
+  .sb { flex: 1; padding: 6px 20px 12px; }
+  .g { margin-top: 18px; }
+  .gl { font: 600 14px/20px var(--lw-face); color: var(--lw-ink-2); padding: 6px 0 4px; }
+  .gl i { font-style: normal; color: var(--lw-ink-3); margin-left: 6px; font-variant-numeric: tabular-nums; }
+  .sl { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 12px; padding: 10px 10px; margin: 0 -10px; border-radius: 8px; }
+  .sl .lt { min-width: 0; }
+  .sl .tn { font: 600 15px/20px var(--lw-face); color: var(--lw-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sl .sm { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sf { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; border-top: 1px solid var(--lw-line); min-height: 44px; }
+  .sf .from { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); }
+  .sendwrap { position: relative; display: grid; justify-items: end; align-items: center; }
+  .sendwrap > * { grid-area: 1 / 1; }
+  .lw-btn.press { background: var(--lw-accent-press); transform: scale(.97); }
+  .sent { display: inline-flex; align-items: center; gap: 7px; font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); white-space: nowrap; }
+  .sent svg { width: 14px; height: 14px; }
+
+  .fly { position: absolute; z-index: 30; pointer-events: none; margin: 0; }
+  .cursor { position: absolute; z-index: 40; width: 20px; height: 24px; pointer-events: none; }
+  .replay { position: fixed; right: 16px; bottom: 12px; z-index: 50; border: 0; background: none; padding: 4px 2px;
+            font: 500 12px/1 var(--lw-face); color: var(--lw-ink-2); cursor: pointer; }
+  .replay:focus-visible { outline: 2px solid var(--lw-accent); outline-offset: 2px; }
+
+  @media (max-width: 734px) {
+    .hero { grid-template-columns: 1fr; padding: 10px 16px 16px; gap: 10px; }
+    .left { display: grid; }
+    .left > * { grid-area: 1 / 1; }
+    .copy { margin-top: 0; align-self: center; }
+    .act { margin-top: 20px; gap: 10px 14px; }
+    .board .ph { display: none; }
+    .board .ow, .board .dt { display: none; }
+    .sh { padding: 10px 14px 8px; }
+    .st { font-size: 16px; line-height: 22px; }
+    .sto { display: none; }
+    .sb { padding: 0 14px 6px; }
+    .g { margin-top: 2px; }
+    .gl { padding: 3px 0 0; }
+    .sl { padding: 3px 8px; margin: 0 -8px; gap: 10px; }
+    .sl .tn { font-size: 14px; line-height: 18px; }
+    .sl .sm { font-size: 13px; line-height: 18px; }
+    .sf { padding: 10px 14px; }
+    .sf .from { display: none; }
+    .sendwrap { width: 100%; }
+  }
+</style>
+</head>
+<body class="lw bg-page">
+<nav class="lw-nav" aria-label="Main">
+  <div class="lw-nav-in">
+    <a class="lw-brand" href="#" aria-label="Lanework home">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3" width="18" height="4" rx="2" fill="#0f7b5f"/><rect x="2" y="9" width="12" height="4" rx="2" fill="#15171c"/><rect x="2" y="15" width="15" height="4" rx="2" fill="#15171c" opacity=".35"/></svg>
+      Lanework
+    </a>
+    <div class="lw-links"><a href="#">Product</a><a href="#">Pricing</a><a href="#">Customers</a><a href="#">Changelog</a></div>
+    <div class="lw-nav-end">
+      <a class="lw-login" href="#">Log in</a>
+      <a class="lw-btn" href="#">Start free</a>
+      <span class="lw-menu" aria-hidden="true"></span>
+    </div>
+  </div>
+</nav>
+
+<main class="hero">
+  <div class="left">
+    <section class="lw-panel board" id="board" aria-label="Board: Halden website relaunch, this week">
+      <header class="ph"><span class="pt">Halden website relaunch</span><span class="pm">This week</span></header>
+      <div class="rows">
+        <div class="lw-row" id="r1"><span class="lw-av a4">DR</span><span class="tk">Migrate blog redirects</span><span class="lw-muted ow">Dev</span><span class="lw-muted dt">Tue 20</span><span class="lw-chip done">Done</span></div>
+        <div class="lw-row" id="r2"><span class="lw-av">MK</span><span class="tk">Fix invoice PDF totals</span><span class="lw-muted ow">Mira</span><span class="lw-muted dt">Wed 21</span><span class="lw-chip late">Late</span></div>
+        <div class="lw-row" id="r3"><span class="lw-av a6">ID</span><span class="tk">Cookie banner legal review</span><span class="lw-muted ow">Ines</span><span class="lw-muted dt">Thu 22</span><span class="lw-chip done">Done</span></div>
+        <div class="lw-row" id="r4"><span class="lw-av a2">TF</span><span class="tk">QA on Safari 18</span><span class="lw-muted ow">Tomás</span><span class="lw-muted dt">Mon 26</span><span class="lw-chip ok">On track</span></div>
+        <div class="lw-row" id="r5"><span class="lw-av a3">AL</span><span class="tk">Homepage hero copy v3</span><span class="lw-muted ow">Ana</span><span class="lw-muted dt">Tue 27</span><span class="lw-chip ok">On track</span></div>
+        <div class="lw-row" id="r6"><span class="lw-av a5">JP</span><span class="tk">Product photos for /shop</span><span class="lw-muted ow">Joon</span><span class="lw-muted dt">Wed 28</span><span class="lw-chip wait">Waiting</span></div>
+      </div>
+    </section>
+
+    <div class="copy" id="copy">
+      <h1 class="lw-h1"><span id="h1a">Friday, 16:55.</span> <span id="h1b"><span class="nw">Nothing left</span> to write.</span></h1>
+      <div class="act" id="act"><a class="lw-btn" href="#">Start free</a><span class="lw-price">$6 per person / month · free for 3</span></div>
+    </div>
+  </div>
+
+  <section class="lw-panel sum" id="sum" aria-label="Friday summary, week 43">
+    <header class="sh">
+      <div>
+        <div class="st">Friday summary · week 43</div>
+        <div class="sto">To Halden &amp; Co. · Halden website relaunch</div>
+      </div>
+      <div class="clk" aria-label="Time">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.6" fill="none" stroke="#5b606b" stroke-width="1.3"/>
+          <line x1="8" y1="8" x2="8" y2="4.9" stroke="#15171c" stroke-width="1.4" stroke-linecap="round" transform="rotate(147.5 8 8)"/>
+          <line x1="8" y1="8" x2="8" y2="3.2" stroke="#15171c" stroke-width="1.2" stroke-linecap="round" id="hm" transform="rotate(330 8 8)"/>
+          <line x1="8" y1="9.2" x2="8" y2="2.6" stroke="#8b909a" stroke-width=".8" stroke-linecap="round" id="hs" transform="rotate(330 8 8)"/>
+        </svg>
+        <b id="clock">16:55</b>
+      </div>
+    </header>
+
+    <div class="sb">
+      <div class="g" id="g1">
+        <div class="gl">Shipped<i>2</i></div>
+        <div class="sl" id="s1"><span class="lw-av a4">DR</span><div class="lt"><div class="tn">Migrate blog redirects</div><div class="sm">Dev Raman · shipped Tue 20 Oct</div></div><span class="lw-chip done">Done</span></div>
+        <div class="sl" id="s2"><span class="lw-av a6">ID</span><div class="lt"><div class="tn">Cookie banner legal review</div><div class="sm">Ines Duarte · shipped Thu 22 Oct</div></div><span class="lw-chip done">Done</span></div>
+      </div>
+      <div class="g" id="g2">
+        <div class="gl">Moved<i>3</i></div>
+        <div class="sl" id="s3"><span class="lw-av a3">AL</span><div class="lt"><div class="tn">Homepage hero copy v3</div><div class="sm">Ana Lindqvist · due Tue 27 Oct</div></div><span class="lw-chip ok">On track</span></div>
+        <div class="sl" id="s4"><span class="lw-av a5">JP</span><div class="lt"><div class="tn">Product photos for /shop</div><div class="sm">Joon Park · due Wed 28 Oct</div></div><span class="lw-chip wait">Waiting</span></div>
+        <div class="sl" id="s5"><span class="lw-av a2">TF</span><div class="lt"><div class="tn">QA on Safari 18</div><div class="sm">Tomás Ferreira · due Mon 26 Oct</div></div><span class="lw-chip ok">On track</span></div>
+      </div>
+      <div class="g" id="g3">
+        <div class="gl">Late<i>1</i></div>
+        <div class="sl" id="s6"><span class="lw-av">MK</span><div class="lt"><div class="tn">Fix invoice PDF totals</div><div class="sm">Mira Kowalski · was due Wed 21 Oct</div></div><span class="lw-chip late">Late</span></div>
+      </div>
+    </div>
+
+    <footer class="sf">
+      <span class="from">From 6 tasks on the board</span>
+      <div class="sendwrap">
+        <a class="lw-btn" href="#" id="send">Send to Halden &amp; Co.</a>
+        <span class="sent" id="sent"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.4l2.9 2.8 6.1-6.4" fill="none" stroke="#5b606b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Sent to Halden &amp; Co. at 16:56</span>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<svg class="cursor" id="cursor" viewBox="0 0 20 24" aria-hidden="true"><path d="M2 1.5v18.2l4.6-4.3 3 6.9 3.1-1.4-3-6.8 6.4-.3z" fill="#15171c" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<button class="replay" id="replay" type="button">Replay</button>
+
+<script>
+(function () {
+  var END = 5.6;
+  var START = 1.2, STEP = 0.46;
+  // board row -> summary line, in the order the summary writes itself
+  var PAIRS = [['r1','s1'],['r3','s2'],['r5','s3'],['r6','s4'],['r4','s5'],['r2','s6']];
+  var GROUPS = [['g1',0],['g2',2],['g3',5]];
+  var $ = function (id) { return document.getElementById(id); };
+  var mobile = function () { return window.matchMedia('(max-width: 734px)').matches; };
+
+  function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return clamp((t - a) / (b - a)); }
+  function eo(p) { return 1 - Math.pow(1 - p, 3); }
+  function eio(p) { return p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+  function abs(el) { var r = el.getBoundingClientRect(); return { x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height }; }
+
+  // flying avatars: one clone per pair
+  var flies = PAIRS.map(function (p) {
+    var src = $(p[0]).querySelector('.lw-av');
+    var f = src.cloneNode(true); f.classList.add('fly'); f.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(f); return f;
+  });
+
+  function render(t) {
+    // clock: seconds hand ticks, minute turns over at t = 4.0
+    var k = Math.floor(t), fr = t - k;
+    var sec = 55 + k + eo(clamp(fr / 0.14));
+    $('hs').setAttribute('transform', 'rotate(' + (sec * 6) + ' 8 8)');
+    $('hm').setAttribute('transform', 'rotate(' + (330 + Math.min(sec - 55, 5) * 0.1 + (t >= 4 ? 5.5 : 0)) + ' 8 8)');
+    $('clock').textContent = t >= 4 ? '16:56' : '16:55';
+
+    PAIRS.forEach(function (p, i) {
+      var s = START + i * STEP;
+      var row = $(p[0]), line = $(p[1]), f = flies[i];
+      var ra = clamp(seg(t, s, s + 0.08) - seg(t, s + 0.36, s + 0.56));
+      row.style.background = ra > 0 ? 'rgba(227,241,236,' + ra + ')' : '';
+      row.style.boxShadow = ra > 0 ? 'inset 3px 0 0 rgba(15,123,95,' + ra + ')' : '';
+
+      var la = clamp(seg(t, s + 0.3, s + 0.38) - seg(t, s + 0.46, s + 0.72));
+      line.style.background = la > 0 ? 'rgba(227,241,236,' + la + ')' : '';
+      var lp = eo(seg(t, s + 0.28, s + 0.5));
+      line.style.opacity = lp;
+      line.style.transform = 'translateY(' + ((1 - lp) * 5).toFixed(2) + 'px)';
+      var dst = line.querySelector('.lw-av');
+      var landed = t >= s + 0.38;
+      dst.style.visibility = landed ? 'visible' : 'hidden';
+
+      var fp = seg(t, s + 0.05, s + 0.38);
+      if (fp > 0 && fp < 1) {
+        var a = abs(row.querySelector('.lw-av')), b = abs(dst);
+        var e = eio(fp);
+        var x = a.x + (b.x - a.x) * e, y = a.y + (b.y - a.y) * e - Math.sin(Math.PI * e) * 18;
+        f.style.left = x + 'px'; f.style.top = y + 'px'; f.style.display = 'inline-grid';
+        f.style.transform = 'scale(' + (1 + Math.sin(Math.PI * e) * 0.12) + ')';
+      } else { f.style.display = 'none'; }
+    });
+
+    GROUPS.forEach(function (g) {
+      var s = START + g[1] * STEP;
+      $(g[0]).querySelector('.gl').style.opacity = eo(seg(t, s, s + 0.22));
+    });
+
+    // the click
+    var send = $('send'), sent = $('sent'), cur = $('cursor');
+    var sb = abs(send);
+    var cx0 = sb.x + sb.w / 2 - 170, cy0 = sb.y + sb.h / 2 + 70;
+    var cx1 = sb.x + sb.w / 2 - 6, cy1 = sb.y + sb.h / 2 - 4;
+    var cp = eio(seg(t, 3.95, 4.38));
+    var co = clamp(seg(t, 3.95, 4.08) - seg(t, 4.6, 4.78));
+    cur.style.left = (cx0 + (cx1 - cx0) * cp) + 'px';
+    cur.style.top = (cy0 + (cy1 - cy0) * cp) + 'px';
+    cur.style.opacity = co; cur.style.display = co > 0 ? 'block' : 'none';
+    send.classList.toggle('press', t >= 4.38 && t < 4.54);
+    var so = 1 - seg(t, 4.55, 4.68);
+    send.style.opacity = so; send.style.visibility = so > 0 ? 'visible' : 'hidden';
+    var sn = eo(seg(t, 4.64, 4.84));
+    sent.style.opacity = sn; sent.style.visibility = sn > 0 ? 'visible' : 'hidden';
+
+    // the headline lands (on a phone it takes the board's place)
+    var m = mobile();
+    var bo = m ? 1 - seg(t, 4.72, 4.92) : 1;
+    $('board').style.opacity = bo; $('board').style.visibility = bo > 0 ? 'visible' : 'hidden';
+    var off = m ? 0.12 : 0;
+    var h1a = eo(seg(t, 4.72 + off, 5.12 + off)), h1b = eo(seg(t, 4.88 + off, 5.28 + off)), ac = eo(seg(t, 5.08 + off, 5.48));
+    [['h1a', h1a], ['h1b', h1b], ['act', ac]].forEach(function (q) {
+      var el = $(q[0]); el.style.opacity = q[1];
+      el.style.transform = 'translateY(' + ((1 - q[1]) * 14).toFixed(2) + 'px)';
+      el.style.visibility = q[1] > 0 ? 'visible' : 'hidden';
+    });
+
+    $('replay').style.visibility = t >= END ? 'visible' : 'hidden';
+  }
+
+  var raf = 0, t0 = 0;
+  function frame(now) {
+    var t = (now - t0) / 1000;
+    if (t >= END) { render(END); raf = 0; return; }
+    render(t); raf = requestAnimationFrame(frame);
+  }
+  function play() {
+    cancelAnimationFrame(raf); render(0);
+    t0 = performance.now(); raf = requestAnimationFrame(frame);
+  }
+  function seekFromHash() {
+    var m = /t=([0-9.]+)/.exec(location.hash);
+    if (!m) return false;
+    cancelAnimationFrame(raf); raf = 0;
+    render(Math.min(parseFloat(m[1]), END));
+    return true;
+  }
+  function start() {
+    if (seekFromHash()) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { render(END); return; }
+    play();
+  }
+
+  render(0);
+  window.addEventListener('hashchange', start);
+  window.addEventListener('resize', function () { if (!raf) seekFromHash() || render(END); });
+  $('replay').addEventListener('click', function () {
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    play();
+  });
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+</script>
+</body>
+</html>

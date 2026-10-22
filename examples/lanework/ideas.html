@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Lanework hero idea board</title>
+<link rel="stylesheet" href="comps/lanework-ds.css">
+<style>
+:root { --ink:#1d1d1f; --ink2:#6e6e73; --line:#e5e5ea; --gut:24px; --sys:system-ui,-apple-system,"Segoe UI",sans-serif; }
+*, *::before, *::after { box-sizing:border-box; }
+html { -webkit-text-size-adjust:100%; }
+body { margin:0; background:#fff; color:var(--ink); font-family:var(--sys); font-size:16px; line-height:1.45; }
+main { max-width:1280px; margin:0 auto; padding:32px var(--gut) 56px; }
+@media (max-width:600px){ :root{ --gut:16px; } }
+h1.bt { font-size:clamp(26px,4vw,40px); line-height:1.1; letter-spacing:-0.02em; margin:6px 0 8px; }
+h2.bh { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); font-weight:600; margin:0 0 12px; }
+h3.bs { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); font-weight:600; margin:18px 0 6px; }
+h3.bs:first-child { margin-top:0; }
+.date { color:var(--ink2); font-size:14px; }
+.sub { margin:0; color:var(--ink2); max-width:72ch; }
+section.bsec { margin-top:40px; }
+.fence { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:24px 0; display:grid; grid-template-columns:1fr 1fr; gap:24px 48px; }
+@media (max-width:800px){ .fence{ grid-template-columns:1fr; } }
+.fence > div, .card > * { min-width:0; }
+ul.l { list-style:none; margin:0; padding:0; font-size:14px; color:var(--ink2); }
+ul.l li { padding:3px 0; }
+ul.l b { color:var(--ink); font-weight:600; }
+.wide { grid-column:1/-1; font-size:14px; color:var(--ink2); margin:0; }
+.wide b { color:var(--ink); }
+.e0 { border:1px solid var(--line); border-radius:12px; padding:20px; display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:20px 28px; align-items:center; }
+.e0 .hk { font-size:28px; font-weight:700; letter-spacing:-0.02em; line-height:1.1; }
+.e0 .sc { color:var(--ink2); font-size:14px; margin-top:6px; }
+@media (max-width:900px){ .e0{ grid-template-columns:1fr; } }
+.cl { width:320px; max-width:100%; height:200px; border:1px solid var(--line); border-radius:8px; padding:14px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; background:#fff; }
+.cl .t { font-weight:700; font-size:14px; letter-spacing:-0.01em; text-align:center; }
+.cl .shot { width:100%; flex:1; background:#e9e9ee; border-radius:4px; display:grid; place-items:center; font-size:10px; color:var(--ink2); text-align:center; padding:0 8px; }
+.cl .three { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; width:100%; }
+.cl .three i { height:26px; border:1px solid var(--line); border-radius:4px; display:block; }
+.card { border:1px solid var(--line); border-radius:12px; padding:24px; margin-top:20px; }
+@media (max-width:600px){ .card{ padding:16px; } }
+.tp { font-size:12px; color:var(--ink2); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+.hook { font-size:40px; line-height:1.08; letter-spacing:-0.025em; font-weight:700; margin:6px 0 4px; overflow-wrap:anywhere; }
+.tot { font-size:14px; color:var(--ink2); }
+.tot b { color:var(--ink); }
+.pick { display:inline-flex; align-items:center; gap:8px; font-size:14px; margin-top:10px; cursor:pointer; }
+input[type=checkbox] { width:18px; height:18px; margin:0; accent-color:#1d1d1f; }
+.info { display:grid; grid-template-columns:1fr 1fr; gap:16px 40px; margin:16px 0 22px; }
+@media (max-width:800px){ .info{ grid-template-columns:1fr; } }
+.info p { margin:0 0 8px; font-size:15px; }
+.info ol { margin:0; padding-left:20px; font-size:15px; }
+.info ol li { margin-bottom:4px; }
+.info .k { display:block; font-size:12px; font-weight:600; color:var(--ink2); letter-spacing:.04em; text-transform:uppercase; }
+.strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 132px; gap:14px; align-items:start; }
+@media (max-width:800px){ .strip{ grid-template-columns:1fr; } .strip figure.ptf{ max-width:200px; } }
+figure { margin:0; min-width:0; }
+figcaption { font-size:12px; color:var(--ink2); margin-top:6px; }
+.fr { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:8px; background:#fff; width:100%; }
+.fr.ls { aspect-ratio:16/10; }
+.fr.pt { aspect-ratio:9/19.5; }
+.st { position:absolute; left:0; top:0; transform-origin:0 0; background:#fff; color:var(--lw-ink); font:400 17px/26px var(--lw-face); overflow:hidden; }
+.st.sf { background:var(--lw-surface); }
+.st.ls { width:1440px; height:900px; padding:56px 64px; display:flex; gap:48px; align-items:center; }
+.st.pt { width:390px; height:844px; padding:56px 20px 20px; display:flex; flex-direction:column; gap:20px; }
+.st .lft { flex:0 0 46%; display:flex; flex-direction:column; gap:28px; }
+.st .rgt, .st .col { flex:1; min-width:0; display:flex; flex-direction:column; gap:20px; }
+.st.ls .lw-h1 { font:700 72px/76px var(--lw-face); letter-spacing:-0.025em; }
+.st.pt .lw-h1 { font:700 44px/48px var(--lw-face); letter-spacing:-0.025em; }
+.st .act { display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; }
+.st .lw-btn:hover { background:var(--lw-accent); }
+.st.ls .lw-eyebrow { font-size:18px; }
+.zm { zoom:1.75; }
+.st.pt .lw-row { grid-template-columns:28px 1fr auto; padding:9px 10px; gap:10px; }
+.st.pt .lw-row .d, .st.pt .lw-row .o { display:none; }
+.pt2 { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--lw-line); font:700 13px/18px var(--lw-face); }
+.pt2 span { font-weight:500; color:var(--lw-ink-2); }
+.dim { opacity:.3; }
+.hl { box-shadow:inset 3px 0 0 var(--lw-accent); background:var(--lw-surface); }
+.clk { font:800 64px/1 var(--lw-face); letter-spacing:-0.03em; }
+.clk small { display:block; font:500 14px/20px var(--lw-face); color:var(--lw-ink-2); letter-spacing:0; margin-top:6px; }
+.msg { display:flex; gap:10px; align-items:flex-start; padding:8px 12px; }
+.msg .b { background:var(--lw-surface); border-radius:10px; padding:6px 10px; font:500 14px/20px var(--lw-face); }
+.msg .b i { display:block; font:500 11px/16px var(--lw-face); color:var(--lw-ink-3); font-style:normal; }
+.mail .f { display:flex; gap:10px; padding:9px 14px; border-bottom:1px solid var(--lw-line); font:500 14px/20px var(--lw-face); }
+.mail .f span:first-child { color:var(--lw-ink-3); width:56px; }
+.mail .caret { display:inline-block; width:2px; height:16px; background:var(--lw-accent); vertical-align:-3px; margin-left:3px; }
+.toast { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; background:var(--lw-ok-bg); color:var(--lw-ok); font:600 14px/20px var(--lw-face); align-self:flex-start; }
+.card1 { padding:18px; }
+.card1 h4 { margin:0 0 4px; font:700 20px/26px var(--lw-face); letter-spacing:-0.01em; }
+.card1 .m { display:flex; flex-wrap:wrap; gap:10px; align-items:center; font:500 14px/20px var(--lw-face); color:var(--lw-ink-2); margin-top:10px; }
+.lanes { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.lane { background:var(--lw-surface); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px; min-height:230px; position:relative; }
+.lane > b { display:flex; align-items:center; gap:8px; font:700 13px/18px var(--lw-face); }
+.tk { background:#fff; border:1px solid var(--lw-line); border-radius:8px; padding:8px 10px; font:500 13px/18px var(--lw-face); }
+.tk em { display:block; font:500 11px/16px var(--lw-face); color:var(--lw-ink-2); font-style:normal; margin-top:2px; }
+.tk.ghost { border-style:dashed; background:transparent; color:var(--lw-ink-3); }
+.tk.drag { position:absolute; left:calc(-100% - 22px); top:92px; width:100%; z-index:3; border-color:var(--lw-accent); box-shadow:0 0 0 2px #e3f1ec; }
+.tk.drag.in { left:10px; right:10px; width:auto; top:44px; }
+.lanes { position:relative; }
+.st.pt .lanes { grid-template-columns:repeat(3,1fr); gap:6px; }
+.st.pt .lane { min-height:150px; padding:6px; }
+.st.pt .tk { font-size:11px; line-height:14px; padding:6px; }
+.near2 { font-size:13px; color:var(--ink2); }
+.rest { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+.rest li { border-bottom:1px solid var(--line); display:grid; grid-template-columns:32px 170px minmax(0,1fr) 80px 90px 80px; gap:4px 12px; align-items:baseline; padding:10px 0; font-size:14px; }
+.rest .n, .rest .ty, .rest .sc { color:var(--ink2); }
+.rest .hk2 { font-weight:600; }
+.rest .sc b { color:var(--ink); }
+.rest .fl { grid-column:3/-1; color:var(--ink2); font-size:13px; }
+.rest .fl.bad { color:#a3352b; }
+.rest label { display:inline-flex; gap:6px; align-items:center; justify-content:flex-end; color:var(--ink2); }
+@media (max-width:800px){
+  .rest li { grid-template-columns:28px minmax(0,1fr) auto; }
+  .rest .ty { grid-column:2/-1; grid-row:2; }
+  .rest .hk2 { grid-column:2; grid-row:1; }
+  .rest .tt { grid-column:2; grid-row:3; }
+  .rest .sc.w { grid-column:2; grid-row:4; }
+  .rest label { grid-column:3; grid-row:1; }
+  .rest .fl { grid-column:2/-1; grid-row:5; }
+}
+.miss { border:1px solid var(--line); border-radius:12px; padding:20px; }
+.miss ul { margin:0; padding-left:18px; font-size:15px; }
+.miss li { margin-bottom:8px; }
+.picks { border:1px solid var(--ink); border-radius:12px; padding:20px; }
+.picks pre { margin:0 0 14px; white-space:pre-wrap; overflow-wrap:anywhere; font:14px/1.5 var(--sys); user-select:all; background:#f5f5f7; border-radius:8px; padding:12px; min-height:44px; }
+.picks label.k { display:block; font-size:12px; font-weight:600; color:var(--ink2); letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px; }
+.picks input[type=text] { width:100%; font:16px var(--sys); padding:10px 12px; border:1px solid #c7c7cc; border-radius:8px; color:var(--ink); }
+footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--line); font-size:13px; color:var(--ink2); }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+<h1 class="bt">Lanework · hero · idea board</h1>
+<div class="date">2026-10-22</div>
+<p class="sub">Featured means the jury scored it, not that the author likes it. Pick 2 to 4. Scores are out of 25.</p>
+</header>
+
+<section class="fence bsec" aria-label="The fence">
+<div>
+<h3 class="bs">Locks</h3>
+<ul class="l">
+<li><b>Design system:</b> Figtree only; type scale, colours, buttons, nav, panels and task rows as in the Lanework DS (owner)</li>
+<li><b>Backgrounds:</b> white or surface #f4f4f1 (owner)</li>
+<li><b>Action:</b> "Start free" (accent button) with the price line "$6 per person / month · free for 3" near it (owner)</li>
+<li><b>Copy in English</b> (owner)</li>
+<li><b>Facts</b> only from the product sheet (T1–T6); no invented customers, logos or statistics (owner)</li>
+<li><b>Product UI</b> shown as real, working HTML, never a screenshot in a browser frame (owner)</li>
+</ul>
+<h3 class="bs">Principles</h3>
+<ul class="l">
+<li>One product as the protagonist: the list of who owns what.</li>
+<li>One promise per viewport.</li>
+<li>Calm, not busy: one thing moves at a time.</li>
+<li>Show the task, not the dashboard.</li>
+<li>Every name, date and number comes from the same mock world.</li>
+</ul>
+</div>
+<div>
+<h3 class="bs">Audience</h3>
+<ul class="l">
+<li><b>Who:</b> the lead of a small studio or product team, 6 people, who runs the work and also does it.</li>
+<li><b>Moment:</b> Monday, 9:40. The standup is in its 25th minute and nobody can say who owns the client's invoice fix.</li>
+<li><b>Uses today:</b> a shared spreadsheet nobody updates, plus a chat thread as the to-do list.</li>
+<li><b>Would show a friend:</b> the Friday summary that wrote itself and went straight to the client.</li>
+<li><b>Stops them buying:</b> "another tool everyone has to keep updated"; "migrating our sheet will take a week".</li>
+</ul>
+<h3 class="bs">Product truths</h3>
+<ul class="l">
+<li><b>T1</b> Every task has exactly one owner and one due date; no unassigned tasks</li>
+<li><b>T2</b> The Friday summary writes itself from what moved; one click sends it</li>
+<li><b>T3</b> Quiet hours: notifications only inside each person's working hours</li>
+<li><b>T4</b> Paste a spreadsheet, get a board, in one paste</li>
+<li><b>T5</b> $6 per person per month; free for up to 3</li>
+<li><b>T6</b> The Monday view: who owns what this week, readable in about 30 seconds</li>
+</ul>
+<h3 class="bs">Free axes</h3>
+<ul class="l"><li>Promise / H1 · Product presentation · Moment · Composition and rhythm · Proof · Authored content · Typographic delivery · World / metaphor</li></ul>
+</div>
+<p class="wide"><b>Clichés:</b> a product screenshot in a browser frame, floating and tilted over a gradient blob · "All your work in one place" and kin · three feature cards with icon, heading, two lines · a logo wall · the predictable opposite (black terminal page, monospace everything, "ship faster" bravado).</p>
+<p class="wide"><b>Selling mechanics:</b> the real product, big and early · one promise · the price next to the action · the product doing its one job in front of you.</p>
+</section>
+
+<section class="bsec" aria-label="Entry 0">
+<h2 class="bh">Entry 0 · the category default</h2>
+<div class="e0">
+<div>
+<div class="hk">«All your team's work in one place.»</div>
+<div class="sc">Score 5 / 25 · WANT 1 · CLEAR 3 · TALK 1 · OWN 1 · PEN 2 · fails PRINCIPLES and VIABLE</div>
+<div class="sc">Jury: every listed cliché at once: the banned headline, a tilted framed screenshot on a gradient, three feature cards; the browser-framed screenshot breaks a lock.</div>
+</div>
+<div class="cl" aria-label="Schematic of the cliché">
+<div class="t">All your team's work<br>in one place.</div>
+<div class="shot">screenshot in a browser frame</div>
+<div class="three"><i></i><i></i><i></i></div>
+</div>
+</div>
+</section>
+
+<section class="bsec" aria-label="Featured">
+<h2 class="bh">Featured · jury order</h2>
+<div id="featured"></div>
+</section>
+
+<section class="bsec" aria-label="The rest">
+<h2 class="bh">The rest · by jury total</h2>
+<ul class="rest" id="rest"></ul>
+</section>
+
+<section class="bsec" aria-label="What is missing">
+<h2 class="bh">What is missing</h2>
+<div class="miss">
+<ul>
+<li><b>Over-represented:</b> T1 (single owner) carries 11 of 21 entries (A, C, D, E, F, H, M, O, P, R, S), and the "mess sorts into order" motion recurs in C, D, E, G, J, T. The set keeps proving ownership and rarely proves anything else.</li>
+<li><b>Truth no entry uses well:</b> T5. Only I touches price, and it fails; nobody makes "free for 3" the try-tonight hook next to the action. T3 has a single entry (L), and it loses the product.</li>
+<li><b>Fear no entry answers with proof:</b> "another tool everyone has to keep updated." No entry shows the other five people's upkeep being near zero. R proves the report stays true, not that the team won't resent feeding it.</li>
+<li><b>Moment no entry shows:</b> the chain from setup to payoff: paste the sheet Sunday night (T4), read the Monday view at 9:40 (T6). Also absent: the teammate's side of the same Monday, and T6's "about 30 seconds" shown as a real, timed read of real UI (B tried it with bars).</li>
+<li><b>Only this product could stage:</b> P (the refused Unassigned drop), R (a drag rewriting the Friday line), H (a task that can't be saved without an owner), N (a summary built from what moved, with owners). C and T come close but a rival with a chat integration or an importer could imitate them.</li>
+</ul>
+</div>
+</section>
+
+<section class="bsec" aria-label="Your picks">
+<h2 class="bh">Your picks</h2>
+<div class="picks">
+<pre id="out" aria-live="polite"></pre>
+<label class="k" for="steer">Steer</label>
+<input type="text" id="steer" placeholder="One line: what to push, what to avoid" autocomplete="off">
+</div>
+</section>
+
+<footer>Lanework is a fictional product; every name and number is from its mock world.</footer>
+</main>
+
+<script>
+const P = { MK:['','Mira'], TF:['a2','Tomás'], AL:['a3','Ana'], DR:['a4','Dev'], JP:['a5','Joon'], ID:['a6','Ines'] };
+const C = { ok:['ok','on track'], wait:['wait','waiting'], late:['late','late'], done:['done','done'] };
+const PRICE = '$6 per person / month · free for 3';
+const row = (p, task, date, chip, cls='') => `<div class="lw-row ${cls}"><span class="lw-av ${P[p][0]}">${p}</span><span>${task}</span><span class="lw-muted o">${P[p][1]}</span><span class="lw-muted d">${date}</span><span class="lw-chip ${chip[0]}">${chip[1]}</span></div>`;
+const pan = (title, right, body, cls='') => `<div class="lw-panel ${cls}"><div class="pt2"><b>${title}</b><span>${right}</span></div>${body}</div>`;
+const msg = (p, text, time, cls='') => `<div class="msg ${cls}"><span class="lw-av ${P[p][0]}">${p}</span><div class="b">${text}<i>${time}</i></div></div>`;
+const T = { inv:'Fix invoice PDF totals', hero:'Homepage hero copy v3', redir:'Migrate blog redirects', cookie:'Cookie banner legal review', photo:'Product photos for /shop', qa:'QA on Safari 18' };
+
+const LS = (inner, bg='') => `<div class="fr ls"><div class="st ls ${bg}" data-w="1440">${inner}</div></div>`;
+const PT = (inner) => `<div class="fr pt"><div class="st pt" data-w="390">${inner}</div></div>`;
+const after = (h, panel) => `<div class="lft"><p class="lw-eyebrow">Lanework</p><h1 class="lw-h1">${h}</h1><div class="act"><a class="lw-btn">Start free</a><span class="lw-price">${PRICE}</span></div></div><div class="rgt zm">${panel}</div>`;
+const afterP = (h, panel) => `<h1 class="lw-h1">${h}</h1><div class="act"><a class="lw-btn">Start free</a></div><div class="lw-price">${PRICE}</div>${panel}`;
+
+const week = (n) => [
+  row('MK', T.inv, 'Thu', C.ok), row('AL', T.hero, 'Wed', C.ok), row('DR', T.redir, 'Fri', C.wait),
+  row('ID', T.cookie, 'Thu', C.wait), row('TF', T.photo, 'Tue', C.done), row('JP', T.qa, 'Fri', C.late)
+].slice(0, n);
+
+// ---------- frames ----------
+const frames = {
+N: {
+  before: LS(`<div class="col zm">${pan('Halden website relaunch', 'this week', week(6).join(''))}</div><div class="col zm">${pan('New message', 'to Halden & Co.', `<div class="mail"><div class="f"><span>To</span><span>Halden & Co.</span></div><div class="f"><span>Subject</span><span class="lw-muted">&nbsp;</span></div><div class="f" style="min-height:150px"><span class="caret" style="margin:0"></span></div></div>`)}<div class="clk" style="zoom:.6">16:55<small>Friday</small></div></div>`),
+  during: LS(`<div class="col zm">${pan('Halden website relaunch', 'this week', week(6).join(''))}</div><div class="col zm">${pan('Friday summary', 'to Halden & Co.', row('TF', T.photo, 'Tue', C.done) + row('MK', T.inv, 'Thu', C.ok, 'hl') + row('AL', T.hero + ' · moved to Wed', 'Wed', C.wait, 'hl') + row('JP', T.qa, 'Fri', C.late, 'dim') + row('DR', T.redir, 'Fri', C.wait, 'dim'))}<div class="clk" style="zoom:.6">16:55<small>writing, from what moved</small></div></div>`),
+  after: LS(after('Friday, 16:55.', `<span class="toast">Sent to Halden &amp; Co.</span>` + pan('Friday summary', 'sent 16:55', row('TF', T.photo, 'Tue', C.done) + row('MK', T.inv, 'Thu', C.ok) + row('AL', T.hero, 'Wed', C.ok) + row('JP', T.qa, 'Fri', C.late) + row('DR', T.redir, 'Fri', C.wait)))),
+  mob: PT(afterP('Friday, 16:55.', `<span class="toast">Sent to Halden &amp; Co.</span>` + pan('Friday summary', 'sent 16:55', row('TF', T.photo, 'Tue', C.done) + row('MK', T.inv, 'Thu', C.ok) + row('AL', T.hero, 'Wed', C.ok) + row('JP', T.qa, 'Fri', C.late) + row('DR', T.redir, 'Fri', C.wait))))
+},
+C: {
+  before: LS(`<div class="col zm">${pan('#halden-relaunch', 'Monday', msg('TF', "who's on the invoice fix?", '9:31') + msg('AL', 'is it Mira? Dev?', '9:34') + msg('DR', 'cookie banner too, who has it?', '9:36') + msg('JP', 'can someone check Safari?', '9:38'))}<div class="clk" style="zoom:.6">9:40<small>Monday</small></div></div><div class="col zm">${pan('Monday view', 'this week', `<div class="lw-row"><span></span><span class="lw-muted">Nothing assigned yet</span><span></span><span></span><span></span></div>`)}</div>`),
+  during: LS(`<div class="col zm">${pan('#halden-relaunch', 'Monday', msg('TF', "who's on the invoice fix?", '9:31', 'dim') + msg('AL', 'is it Mira? Dev?', '9:34', 'dim') + msg('DR', 'cookie banner too, who has it?', '9:36') + msg('JP', 'can someone check Safari?', '9:38'))}<div class="clk" style="zoom:.6">9:41<small>Monday</small></div></div><div class="col zm">${pan('Monday view', 'this week', row('MK', T.inv, 'Thu', C.ok, 'hl') + row('AL', T.hero, 'Wed', C.ok) + row('ID', T.cookie, 'Thu', C.wait, 'hl'))}</div>`),
+  after: LS(after('Monday, 9:40. Sorted by 9:41.', pan('Monday view', 'this week · 6 people', week(6).join('')))),
+  mob: PT(afterP('Monday, 9:40. Sorted by 9:41.', pan('Monday view', 'this week', week(6).join(''))))
+},
+H: {
+  before: LS(`<div class="col" style="align-items:center"><div style="zoom:2.6;width:100%;max-width:200px"><div class="lw-panel card1"><h4>${T.inv}</h4><div class="lw-muted lw-small">Halden website relaunch</div><div class="m"><span class="lw-chip late">unassigned · 12 days</span><span>no owner</span><span>no date</span></div></div></div></div>`, 'sf'),
+  during: LS(`<div class="col" style="align-items:center"><div style="zoom:2.6;width:100%;max-width:200px"><div class="lw-panel card1 hl"><h4>${T.inv}</h4><div class="lw-muted lw-small">Halden website relaunch</div><div class="m"><span class="lw-av">MK</span><span>Mira</span><span class="lw-chip ok">Thu</span><span class="lw-muted">saved</span></div></div></div></div>`, 'sf'),
+  after: LS(after('Now somebody does.', pan('Halden website relaunch', 'this week', row('MK', T.inv, 'Thu', C.done) + row('AL', T.hero, 'Wed', C.ok) + row('DR', T.redir, 'Fri', C.wait))), 'sf'),
+  mob: PT(afterP('Now somebody does.', pan('Halden website relaunch', 'this week', row('MK', T.inv, 'Thu', C.done) + row('AL', T.hero, 'Wed', C.ok) + row('DR', T.redir, 'Fri', C.wait))))
+},
+R: {
+  before: LS(`<div class="col zm"><div class="lanes">${lane('AL', [['QA on Safari 18', 'Thu · late']])}${lane('JP', [['Cookie banner legal review', 'Thu']])}${lane('MK', [['Fix invoice PDF totals', 'Thu']])}</div></div><div class="col zm">${pan('Friday summary', 'live', row('AL', T.qa + ' · Thu', 'Thu', C.late) + row('MK', T.inv, 'Thu', C.ok))}</div>`),
+  during: LS(`<div class="col zm"><div class="lanes">${lane('AL', [], 1)}${lane('JP', [['Cookie banner legal review', 'Thu']], 0, '<div class="tk drag">QA on Safari 18<em>Thu · late</em></div>')}${lane('MK', [['Fix invoice PDF totals', 'Thu']])}</div></div><div class="col zm">${pan('Friday summary', 'live', row('JP', T.qa + ' · Fri', 'Fri', C.late, 'hl') + row('MK', T.inv, 'Thu', C.ok))}</div>`),
+  after: LS(after('Drag a task. Watch Friday change.', pan('Friday summary', 'live', row('JP', T.qa, 'Fri', C.late, 'hl') + row('MK', T.inv, 'Thu', C.ok) + row('ID', T.cookie, 'Thu', C.wait)))),
+  mob: PT(afterP('Drag a task. Watch Friday change.', `<div class="lanes">${lane('AL', [])}${lane('JP', [['QA on Safari 18', 'Fri · late']])}${lane('MK', [['Fix invoice PDF totals', 'Thu']])}</div>` + pan('Friday summary', 'live', row('JP', T.qa, 'Fri', C.late, 'hl') + row('MK', T.inv, 'Thu', C.ok))))
+}
+};
+function lane(p, tasks, ghost, extra='') {
+  return `<div class="lane"><b><span class="lw-av ${P[p][0]}">${p}</span>${P[p][1]}</b>${tasks.map(t => `<div class="tk">${t[0]}<em>${t[1]}</em></div>`).join('')}${ghost ? '<div class="tk ghost">moved to Joon</div>' : ''}${extra}</div>`;
+}
+
+// ---------- data ----------
+const featured = [
+ { id:'N', num:5, type:'moment of use', hook:'Friday, 16:55.', total:22,
+   want:"I never write that Friday client email again — it's already done by five to five.",
+   talk:"At 16:55 the client update wrote itself line by line — shipped, moved, late, each with a name — and went to Halden.",
+   beats:['Blank email, the clock at 16:55.', 'The Friday summary writes itself over 3 s, line by line: shipped, moved, late, each with an owner.', '"Sent to Halden & Co." and the H1.'],
+   proof:['T2 · The Friday summary writes itself from what moved this week; one click sends it to the team or a client.'] },
+ { id:'C', num:1, type:'transformation', hook:'Monday, 9:40. Sorted by 9:41.', total:21,
+   want:"I want my standup to be over by 9:41.",
+   talk:"Their hero is literally our Monday — the 'who's on the invoice fix?' thread, and each question snaps into a row with a name and a date.",
+   beats:['Messages pile up in the thread, the clock reads 9:40, the Monday view is empty.', 'Each question lifts out of the thread and snaps into a row with one owner and one date.', 'The clock reads 9:41 and the H1 lands.'],
+   proof:['T6 · The Monday view: one screen that shows who owns what this week, readable in about 30 seconds.', 'T1 · Every task has exactly one owner and one due date.'] },
+ { id:'H', num:3, type:'enemy / tension', hook:'Nobody owns this.', total:20,
+   want:"That's the invoice fix nobody picked up — I want the tool that won't let it exist.",
+   talk:"A lonely task card ages to 12 days, then Lanework snaps an owner and a date onto it — it literally can't be saved without one.",
+   beats:['One task card alone on a grey page, no avatar, drifting and ageing to 12 days.', 'It drops into Lanework; an owner and a date snap onto it.', 'It moves to Done and the H1 turns into «Now somebody does.»'],
+   proof:['T1 · Every task has exactly one owner and one due date; a task without an owner cannot be saved.'] },
+ { id:'R', num:19, type:'demonstration / try it', hook:'Drag a task. Watch Friday change.', total:20,
+   want:"The report keeps itself true while we work — no double entry.",
+   talk:"You drag a late task to Joon and the Friday summary rewrites its own line, live.",
+   beats:['Owner lanes on the left, the Friday summary preview on the right; both idle.', 'The visitor drags a late task to Joon; owner and date change and the summary line rewrites itself live.', 'The H1.'],
+   proof:['T1 · Every task has exactly one owner and one due date.', 'T2 · The Friday summary writes itself from what moved this week.'] }
+];
+
+// letter, number, type, hook, want, clear, talk, own, pen, total, flag
+const rest = [
+ ['S',14,'moment of use','Thursday. The client calls.',4,20,''],
+ ['T',8,'ritual / reveal','Paste. That\'s the setup.',4,19,''],
+ ['P',2,'demonstration / try it','Click any task. Meet its owner.',3,18,''],
+ ['L',9,'demonstration / try it','Quiet after six.',4,18,'fails PRINCIPLES'],
+ ['U',6,'identity / social','The update your client forwards.',4,18,'fails PRINCIPLES'],
+ ['F',20,'product as object','One row.',3,16,''],
+ ['K',16,'ritual / reveal','Your week, written.',4,16,''],
+ ['M',17,'identity / social','First morning, three tasks.',3,16,''],
+ ['D',15,'scale / impossible fact','147 tasks. 6 owners. 0 orphans.',3,15,'fails PRINCIPLES'],
+ ['O',4,'copy-led','Who\'s on it?',3,15,''],
+ ['B',7,'scale / impossible fact','25 minutes, or 30 seconds.',3,14,'fails PRINCIPLES and VIABLE'],
+ ['E',11,'transformation','From thread to task.',3,14,''],
+ ['G',12,'enemy / tension','The sheet nobody updates.',3,14,''],
+ ['J',10,'product as object','The Monday view.',3,13,''],
+ ['A',18,'metaphor world','A lane for every person.',2,10,'fails PRINCIPLES'],
+ ['I',13,'copy-led','$6. Less than one standup.',2,8,'fails PRINCIPLES and VIABLE']
+];
+const names = {}; featured.forEach(f => names[f.id] = f); rest.forEach(r => names[r[0]] = { id:r[0], num:r[1], hook:r[3], total:r[5] });
+
+// ---------- state ----------
+const KEY = 'lanework-ideas-2026-10-22';
+let state = { picks:{}, steer:'' };
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.picks) state = s; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+// ---------- render ----------
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+document.getElementById('featured').innerHTML = featured.map(f => `
+<article class="card" id="card-${f.id}">
+  <div class="tp">${f.type} · wide-list ${f.num} · code ${f.id}</div>
+  <div class="hook">«${esc(f.hook)}»</div>
+  <div class="tot">Jury total <b>${f.total}</b> / 25</div>
+  <label class="pick"><input type="checkbox" data-id="${f.id}"> pick</label>
+  <div class="info">
+    <div>
+      <p><span class="k">WANT</span><q>${esc(f.want)}</q></p>
+      <p><span class="k">TALK</span><q>${esc(f.talk)}</q></p>
+      <p><span class="k">Proof</span>${f.proof.map(esc).join('<br>')}</p>
+    </div>
+    <div>
+      <span class="k">Beats</span>
+      <ol><li><b>Before.</b> ${esc(f.beats[0])}</li><li><b>During.</b> ${esc(f.beats[1])}</li><li><b>After.</b> ${esc(f.beats[2])}</li></ol>
+    </div>
+  </div>
+  <div class="strip">
+    <figure>${frames[f.id].before}<figcaption>Before</figcaption></figure>
+    <figure>${frames[f.id].during}<figcaption>During</figcaption></figure>
+    <figure>${frames[f.id].after}<figcaption>After</figcaption></figure>
+    <figure class="ptf">${frames[f.id].mob}<figcaption>390 · after</figcaption></figure>
+  </div>
+</article>`).join('');
+
+document.getElementById('rest').innerHTML = rest.map(r => `
+<li><span class="n">${r[1]}</span><span class="ty">${r[2]}</span><span class="hk2">«${esc(r[3])}»</span><span class="sc"><b>${r[5]}</b> / 25</span><span class="sc w">WANT ${r[4]}</span><label><input type="checkbox" data-id="${r[0]}"> show</label>${r[6] ? `<span class="fl bad">${r[6]}</span>` : ''}</li>`).join('');
+// fix mobile order class on total
+document.querySelectorAll('.rest .sc:not(.w)').forEach(e => e.classList.add('tt'));
+
+const boxes = document.querySelectorAll('input[data-id]');
+boxes.forEach(b => { b.checked = !!state.picks[b.dataset.id]; b.addEventListener('change', () => { state.picks[b.dataset.id] = b.checked; save(); out(); }); });
+const steer = document.getElementById('steer'); steer.value = state.steer || '';
+steer.addEventListener('input', () => { state.steer = steer.value; save(); out(); });
+function out() {
+  const ids = Object.keys(state.picks).filter(k => state.picks[k]).map(k => names[k]).sort((a, b) => b.total - a.total);
+  const lines = ids.map(n => `${n.id} · #${n.num} · «${n.hook}» · ${n.total}/25`);
+  document.getElementById('out').textContent = (lines.length ? lines.join('\n') : 'Nothing checked yet.') + (state.steer ? `\nSteer: ${state.steer}` : '');
+}
+out();
+
+// ---------- scale miniatures ----------
+function fit() { document.querySelectorAll('.fr').forEach(fr => { const st = fr.firstElementChild; st.style.transform = `scale(${fr.clientWidth / +st.dataset.w})`; }); }
+fit(); window.addEventListener('resize', fit); window.addEventListener('load', fit);
+if (window.ResizeObserver) { const ro = new ResizeObserver(fit); document.querySelectorAll('.fr').forEach(f => ro.observe(f)); }
+</script>
+</body>
+</html>

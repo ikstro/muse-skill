@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lanework — Drag a task</title>
+<link rel="stylesheet" href="../lanework-ds.css">
+<style>
+  /* Layout and comp-only parts. DS classes are positioned here, never restyled. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  .hero { box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 14px 32px 40px; }
+
+  .product { display: grid; grid-template-columns: 64fr 36fr; gap: 24px; align-items: stretch; }
+
+  /* Board: a lane per owner */
+  .board { position: relative; overflow: visible; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .phead { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--lw-line); font: 600 15px/20px var(--lw-face); color: var(--lw-ink); }
+  .phead .meta { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-3); white-space: nowrap; }
+  .lane { position: relative; display: grid; grid-template-columns: 104px 1fr; align-items: center; column-gap: 12px; padding: 10px 18px; }
+  .lane + .lane { border-top: 1px solid var(--lw-line); }
+  .lane .bg { position: absolute; inset: 0; background: var(--lw-surface); opacity: 0; pointer-events: none; }
+  .lane:last-child .bg { border-radius: 0 0 11px 11px; }
+  .lane.over .bg { opacity: 1; }
+  .who { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 600 14px/20px var(--lw-face); color: var(--lw-ink); }
+  .cards { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-height: 64px; min-width: 0; }
+  .cards .card { flex: 0 1 auto; min-width: 156px; }
+  .card .mt, .card .lw-chip { white-space: nowrap; }
+  .card .nm { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .card > span:nth-child(2), .card .mt { min-width: 0; }
+  .card { grid-template-columns: 28px minmax(0, auto); }
+
+  .card { position: relative; box-sizing: border-box; display: grid; grid-template-columns: 28px auto; grid-template-rows: auto auto; column-gap: 10px; align-items: center;
+          padding: 9px 14px 9px 10px; background: var(--lw-page); border: 1px solid var(--lw-line); border-radius: 10px; cursor: grab; transform-origin: 50% 50%; will-change: transform; }
+  .card .lw-av { grid-row: 1 / 3; }
+  .card .nm { font: 500 14px/20px var(--lw-face); color: var(--lw-ink); white-space: nowrap; }
+  .card .mt { display: flex; align-items: center; gap: 8px; margin-top: 3px; font: 500 13px/18px var(--lw-face); color: var(--lw-ink-2); }
+  .card .due { min-width: 26px; }
+  .card[data-st="done"] { cursor: default; }
+  .card[data-st="done"] .nm { color: var(--lw-ink-2); }
+  .card.lifted { z-index: 6; border-color: var(--lw-accent); cursor: grabbing; }
+  .card .grip { display: none; }
+
+  .slot { position: absolute; box-sizing: border-box; border: 1px dashed #c9c9c2; border-radius: 10px; pointer-events: none; opacity: 0; }
+
+  .hint { display: inline-flex; align-items: center; gap: 6px; font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); white-space: nowrap; pointer-events: none; opacity: 0; }
+  .hint svg { width: 16px; height: 16px; display: block; }
+  .hint.m { display: none; }
+
+  /* Friday summary preview */
+  .summary { display: flex; flex-direction: column; }
+  .slist { padding: 6px 0; }
+  .sl { position: relative; display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; align-items: center; padding: 8px 18px; font: 500 14px/20px var(--lw-face); color: var(--lw-ink); }
+  .sl::before { content: ""; position: absolute; inset: 0 6px; border-radius: 8px; background: var(--lw-ok-bg); opacity: var(--hl, 0); pointer-events: none; }
+  .sl > * { position: relative; }
+  .sl .st { min-height: 20px; }
+  .sl .tail { white-space: pre-wrap; }
+  .sl .lw-chip { margin-left: 2px; vertical-align: 1px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--lw-line); }
+  .stats > div { padding: 14px 18px 13px; }
+  .stats > div + div { border-left: 1px solid var(--lw-line); }
+  .stats b { display: block; font: 700 40px/44px var(--lw-face); letter-spacing: -0.02em; color: var(--lw-ink); font-variant-numeric: tabular-nums; }
+  .stats span { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); }
+  .sfoot { margin-top: auto; padding: 13px 18px; border-top: 1px solid var(--lw-line); font: 500 14px/20px var(--lw-face); color: var(--lw-ink-3); }
+
+  /* The words */
+  .say { display: grid; grid-template-columns: 1fr 400px; column-gap: 48px; align-items: end; margin-top: 40px; }
+  .say .ln { display: block; will-change: transform, opacity; }
+  .act { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; margin-top: 22px; }
+
+  .replay { position: fixed; right: 16px; bottom: 12px; z-index: 30; padding: 6px 8px; border: 0; background: none; font: 500 12px/16px var(--lw-face); color: var(--lw-ink-2); cursor: pointer; visibility: hidden; }
+  .replay.on { visibility: visible; }
+
+  @media (pointer: coarse) {
+    .card { padding-right: 38px; }
+    .card .grip { display: grid; place-items: center; position: absolute; top: 0; right: 0; bottom: 0; width: 34px; touch-action: none; cursor: grab; }
+    .card .grip svg { width: 10px; height: 16px; }
+    .card[data-st="done"] .grip { display: none; }
+    .card[data-st="done"] { padding-right: 14px; }
+  }
+
+  @media (max-width: 1068px) {
+    .say { grid-template-columns: 1fr; }
+    .say .side { max-width: 560px; margin-top: 20px; }
+  }
+
+  @media (max-width: 734px) {
+    .hero { padding: 8px 16px 32px; }
+    .product { grid-template-columns: 1fr; gap: 12px; }
+    .phead { padding: 11px 14px; }
+    .lane { grid-template-columns: 84px 1fr; column-gap: 10px; padding: 8px 12px; }
+    .lane.mob-off { display: none; }
+    .lane.mob-off + .lane { border-top: 0; }
+    .lane:not(.mob-off) ~ .lane:not(.mob-off) { border-top: 1px solid var(--lw-line); }
+    .cards { min-height: 64px; flex-wrap: nowrap; }
+    .card:not(.top) { display: none; }
+    .card { min-width: 0; }
+    .card .nm { overflow: hidden; text-overflow: ellipsis; }
+    .hint.d { display: none; }
+    .hint.m { display: inline-flex; }
+    .sl { padding: 7px 14px; column-gap: 10px; }
+    .sl.m-hide, .sfoot, .stats, .m-off { display: none; }
+    .say { margin-top: 24px; }
+    .say .side { margin-top: 0; }
+    .say .lw-lead { display: none; }
+    .act { margin-top: 18px; gap: 8px 14px; }
+  }
+</style>
+</head>
+<body class="lw bg-page">
+<nav class="lw-nav" aria-label="Main">
+  <div class="lw-nav-in">
+    <a class="lw-brand" href="#" aria-label="Lanework home">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3" width="18" height="4" rx="2" fill="#0f7b5f"/><rect x="2" y="9" width="12" height="4" rx="2" fill="#15171c"/><rect x="2" y="15" width="15" height="4" rx="2" fill="#15171c" opacity=".35"/></svg>
+      Lanework
+    </a>
+    <div class="lw-links"><a href="#">Product</a><a href="#">Pricing</a><a href="#">Customers</a><a href="#">Changelog</a></div>
+    <div class="lw-nav-end">
+      <a class="lw-login" href="#">Log in</a>
+      <a class="lw-btn" href="#">Start free</a>
+      <span class="lw-menu" aria-hidden="true"></span>
+    </div>
+  </div>
+</nav>
+
+<main class="hero">
+  <section class="product" aria-label="Lanework board and Friday summary">
+    <div class="lw-panel board" id="board">
+      <div class="phead">Halden website relaunch <span class="meta">Week of 19 Oct<span class="m-off"> · 6 owners</span></span></div>
+      <div id="lanes"></div>
+      <div class="slot" id="slot"></div>
+    </div>
+    <div class="lw-panel summary" aria-live="polite">
+      <div class="phead">Friday summary · preview <span class="meta">To Halden &amp; Co.</span></div>
+      <div class="stats" aria-label="This week"><div><b id="n-shipped">2</b><span>shipped</span></div><div><b id="n-moved">1</b><span>moved</span></div><div><b id="n-late">2</b><span>late</span></div></div>
+      <div class="slist" id="slist"></div>
+      <div class="sfoot">Written from what moved this week. One click sends it.</div>
+    </div>
+  </section>
+
+  <section class="say">
+    <h1 class="lw-h1" id="h1"><span class="ln">Drag a task.</span><span class="ln">Watch Friday change.</span></h1>
+    <div class="side" id="side">
+      <p class="lw-lead">Every task has one owner and one date. Move one, and the Friday summary rewrites its own line.</p>
+      <div class="act"><a class="lw-btn" href="#">Start free</a><span class="lw-price">$6 per person / month · free for 3</span></div>
+    </div>
+  </section>
+</main>
+
+<button class="replay" id="replay" type="button">Replay</button>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- the mock world ---------- */
+  var OWNERS = [
+    { id: "mira",  name: "Mira",  ini: "MK", av: "",   mob: false },
+    { id: "tomas", name: "Tomás", ini: "TF", av: "a2", mob: true },
+    { id: "ana",   name: "Ana",   ini: "AL", av: "a3", mob: false },
+    { id: "dev",   name: "Dev",   ini: "DR", av: "a4", mob: true },
+    { id: "joon",  name: "Joon",  ini: "JP", av: "a5", mob: true },
+    { id: "ines",  name: "Ines",  ini: "ID", av: "a6", mob: false }
+  ];
+  var TASKS = [
+    { id: "inv",  name: "Fix invoice PDF totals",     owner: "mira",  due: "Thu", st: "ok" },
+    { id: "rev",  name: "Client review prep",         owner: "mira",  due: "Fri", st: "wait" },
+    { id: "pho",  name: "Product photos for /shop",   owner: "tomas", due: "Fri", st: "ok" },
+    { id: "qa",   name: "QA on Safari 18",            owner: "tomas", due: "Wed", st: "late" },
+    { id: "hero", name: "Homepage hero copy v3",      owner: "ana",   due: "Tue", st: "done" },
+    { id: "prc",  name: "Pricing page copy",          owner: "ana",   due: "Fri", st: "ok" },
+    { id: "404",  name: "404 page states",            owner: "dev",   due: "Fri", st: "ok" },
+    { id: "mig",  name: "Migrate blog redirects",     owner: "dev",   due: "Tue", st: "late" },
+    { id: "form", name: "Contact form spam fix",      owner: "joon",  due: "Fri", st: "wait" },
+    { id: "cook", name: "Cookie banner legal review", owner: "ines",  due: "Wed", st: "done" },
+    { id: "evt",  name: "Analytics events",           owner: "ines",  due: "Fri", st: "ok" }
+  ];
+  /* Friday summary: shipped, moved, late, with owners */
+  var LINES = [
+    { task: "hero", kind: "shipped", who: "ana",   mob: false },
+    { task: "cook", kind: "shipped", who: "ines",  mob: false },
+    { task: "pho",  kind: "moved",   who: "tomas", due: "Fri", mob: false },
+    { task: "mig",  kind: "late",    who: "dev",   mob: true },
+    { task: "qa",   kind: "late",    who: "tomas", mob: true }
+  ];
+  var CHIP = { ok: "on track", wait: "waiting", late: "late", done: "done" };
+  var TODAY = "Thu";
+
+  function owner(id) { for (var i = 0; i < OWNERS.length; i++) if (OWNERS[i].id === id) return OWNERS[i]; }
+  function task(id) { for (var i = 0; i < TASKS.length; i++) if (TASKS[i].id === id) return TASKS[i]; }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function av(o) { var s = el("span", "lw-av" + (o.av ? " " + o.av : ""), o.ini); s.setAttribute("aria-label", o.name); return s; }
+
+  var board = document.getElementById("board");
+  var lanesEl = document.getElementById("lanes");
+  var slist = document.getElementById("slist");
+  var slot = document.getElementById("slot");
+  var h1Lines = document.querySelectorAll("#h1 .ln");
+  var side = document.getElementById("side");
+  var replayBtn = document.getElementById("replay");
+
+  var ARROW = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3.5M7 4.5 3.5 8 7 11.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var GRIP = '<svg viewBox="0 0 10 16" aria-hidden="true"><g fill="#8b909a"><circle cx="2.5" cy="3" r="1.4"/><circle cx="7.5" cy="3" r="1.4"/><circle cx="2.5" cy="8" r="1.4"/><circle cx="7.5" cy="8" r="1.4"/><circle cx="2.5" cy="13" r="1.4"/><circle cx="7.5" cy="13" r="1.4"/></g></svg>';
+
+  /* ---------- build ---------- */
+  var lanes = {}, cards = {}, hints = [], migLine;
+
+  function makeCard(t) {
+    var c = el("div", "card");
+    c.dataset.id = t.id; c.dataset.owner = t.owner; c.dataset.due = t.due; c.dataset.st = t.st;
+    c.appendChild(av(owner(t.owner)));
+    c.appendChild(el("span", "nm", t.name));
+    var mt = el("span", "mt");
+    mt.appendChild(el("span", "due", t.due));
+    mt.appendChild(el("span", "lw-chip " + t.st, CHIP[t.st]));
+    c.appendChild(mt);
+    var g = el("span", "grip"); g.innerHTML = GRIP; c.appendChild(g);
+    return c;
+  }
+  function setCard(c, ownerId, due, st) {
+    var o = owner(ownerId), a = c.querySelector(".lw-av");
+    a.className = "lw-av" + (o.av ? " " + o.av : ""); a.textContent = o.ini; a.setAttribute("aria-label", o.name);
+    c.querySelector(".due").textContent = due;
+    var ch = c.querySelector(".lw-chip"); ch.className = "lw-chip " + st; ch.textContent = CHIP[st];
+    c.dataset.owner = ownerId; c.dataset.due = due; c.dataset.st = st;
+  }
+
+  function lineParts(kind, who, due) {
+    var o = owner(who);
+    if (kind === "moved") return { tail: "moved to " + o.name + " · " + due, chip: null, o: o };
+    if (kind === "shipped") return { tail: o.name + " · ", chip: { cls: "done", txt: "shipped" }, o: o };
+    return { tail: o.name + " · ", chip: { cls: "late", txt: "late" }, o: o };
+  }
+  function makeLine(L) {
+    var t = task(L.task), p = lineParts(L.kind, L.who, L.due);
+    var row = el("div", "sl" + (L.mob ? "" : " m-hide"));
+    row.dataset.task = L.task; row.dataset.kind = L.kind;
+    row.appendChild(av(p.o));
+    var st = el("span", "st");
+    st.appendChild(el("span", "pre", t.name + " · "));
+    st.appendChild(el("span", "tail", p.tail));
+    var ch = el("span", "lw-chip " + (p.chip ? p.chip.cls : "ok"), p.chip ? p.chip.txt : "");
+    if (!p.chip) ch.style.display = "none";
+    st.appendChild(ch);
+    row.appendChild(st);
+    return row;
+  }
+
+  function build() {
+    lanesEl.textContent = ""; slist.textContent = ""; lanes = {}; cards = {}; hints = [];
+    OWNERS.forEach(function (o) {
+      var lane = el("div", "lane" + (o.mob ? "" : " mob-off"));
+      lane.dataset.owner = o.id;
+      lane.appendChild(el("span", "bg"));
+      var who = el("div", "who"); who.appendChild(av(o)); who.appendChild(el("span", "", o.name));
+      var cs = el("div", "cards");
+      lane.appendChild(who); lane.appendChild(cs);
+      lanesEl.appendChild(lane);
+      lanes[o.id] = { lane: lane, cards: cs, who: who };
+    });
+    TASKS.forEach(function (t) { var c = makeCard(t); cards[t.id] = c; lanes[t.owner].cards.appendChild(c); });
+    /* the hint: right of the late card on desktop, under Dev's name on phones */
+    var hd = el("span", "hint d"); hd.innerHTML = ARROW + "Drag a task";
+    lanes.dev.cards.appendChild(hd);
+    var hm = el("span", "hint m"); hm.innerHTML = "Drag a task";
+    lanes.dev.who.appendChild(hm);
+    hints = [hd, hm];
+    LINES.forEach(function (L) { var r = makeLine(L); slist.appendChild(r); if (L.task === "mig") migLine = r; });
+    markTops();
+  }
+
+  /* On phones a lane shows one card: the last one moved in, else the first late, else the first. */
+  function markTops() {
+    Object.keys(lanes).forEach(function (k) {
+      var cs = [].slice.call(lanes[k].cards.querySelectorAll(".card"));
+      cs.forEach(function (c) { c.classList.remove("top"); });
+      if (!cs.length) return;
+      var pick = null, best = 0;
+      cs.forEach(function (c) { var m = +(c.dataset.moved || 0); if (m > best) { best = m; pick = c; } });
+      if (!pick) pick = cs.filter(function (c) { return c.dataset.st === "late"; })[0] || cs[0];
+      pick.classList.add("top");
+    });
+  }
+
+  /* ---------- timing ---------- */
+  var END = 5.6;
+  var K = {
+    hintIn: 0.3, hintOut: 1.15,
+    pick: 1.2, go: 1.35, drop: 2.6, room: 2.25,
+    swapAv: 2.8, swapDue: 2.92, swapChip: 3.04,
+    line: 3.0,
+    h1: 3.8, side: 4.5
+  };
+  function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, d) { return clamp((t - a) / d); }
+  function eio(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function eout(x) { return 1 - Math.pow(1 - x, 3); }
+  function lerp(a, b, p) { return a + (b - a) * p; }
+  /* a value that dips out and comes back, swapping content at the bottom */
+  function dip(t, at) { var d = 0.09; if (t < at - d || t >= at + d) return 1; return t < at ? (at - t) / d : (t - at) / d; }
+
+  /* ---------- the auto moment, as a function of time ---------- */
+  var M = null; /* measurements */
+
+  function placeMig(dropped) {
+    var c = cards.mig;
+    if (dropped) {
+      if (c.parentNode !== lanes.joon.cards) lanes.joon.cards.insertBefore(c, lanes.joon.cards.firstChild);
+      c.dataset.moved = "1";
+    } else {
+      if (c.parentNode !== lanes.dev.cards || c.nextSibling !== hints[0]) lanes.dev.cards.insertBefore(c, hints[0]);
+      delete c.dataset.moved;
+    }
+    markTops();
+  }
+  function rel(r, b) { return { x: r.left - b.left, y: r.top - b.top, w: r.width, h: r.height, vis: r.width > 0 }; }
+
+  function measure() {
+    Object.keys(cards).forEach(function (k) { cards[k].style.transform = ""; cards[k].style.opacity = ""; });
+    var b = board.getBoundingClientRect();
+    var A = {}, B = {};
+    placeMig(false);
+    Object.keys(cards).forEach(function (k) { A[k] = rel(cards[k].getBoundingClientRect(), b); });
+    placeMig(true);
+    Object.keys(cards).forEach(function (k) { B[k] = rel(cards[k].getBoundingClientRect(), b); });
+    M = { A: A, B: B };
+  }
+
+  var FROM = { tail: "Dev · ", chip: { cls: "late", txt: "late" }, o: null };
+  var TO = { tail: "moved to Joon · " + TODAY, chip: null, o: null };
+
+  function render(t) {
+    if (!M) measure();
+    FROM.o = owner("dev"); TO.o = owner("joon");
+    var dropped = t >= K.drop;
+    placeMig(dropped);
+    var mig = cards.mig;
+
+    /* hint */
+    var h = Math.min(eout(seg(t, K.hintIn, 0.3)), 1 - seg(t, K.hintOut, 0.2));
+    hints.forEach(function (e) { e.style.opacity = h; });
+
+    /* the dragged card */
+    var A = M.A.mig, B = M.B.mig;
+    var lift = eout(seg(t, K.pick, 0.15)) * (1 - eout(seg(t, K.drop, 0.15)));
+    var sc = 1 + 0.03 * lift;
+    var tx = 0, ty = 0;
+    if (!dropped) {
+      var p = eio(seg(t, K.go, K.drop - K.go));
+      tx = lerp(0, B.x - A.x, p);
+      ty = lerp(0, B.y - A.y, p) - 16 * Math.sin(Math.PI * p);
+    }
+    mig.style.transform = (tx || ty || sc !== 1) ? "translate(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px) scale(" + sc.toFixed(4) + ")" : "";
+    mig.classList.toggle("lifted", t >= K.pick && t < K.drop + 0.15);
+
+    /* owner, date, chip update on drop */
+    var o = t < K.swapAv ? "dev" : "joon", due = t < K.swapDue ? "Tue" : TODAY, st = t < K.swapChip ? "late" : "ok";
+    setCard(mig, o, due, st);
+    mig.querySelector(".lw-av").style.opacity = dip(t, K.swapAv);
+    mig.querySelector(".due").style.opacity = dip(t, K.swapDue);
+    mig.querySelector(".lw-chip").style.opacity = dip(t, K.swapChip);
+
+    /* the other cards make room, settle, fade where the phone shows one per lane */
+    var room = eio(seg(t, K.room, K.drop - K.room)), settle = eio(seg(t, K.drop, 0.3));
+    Object.keys(cards).forEach(function (k) {
+      if (k === "mig") return;
+      var c = cards[k], a = M.A[k], b = M.B[k], dx = 0, dy = 0, op = 1;
+      if (!dropped) {
+        if (a.vis && b.vis) { dx = (b.x - a.x) * room; dy = (b.y - a.y) * room; }
+        else if (a.vis && !b.vis) op = 1 - seg(t, K.drop - 0.25, 0.25);
+      } else {
+        if (a.vis && b.vis) { dx = (a.x - b.x) * (1 - settle); dy = (a.y - b.y) * (1 - settle); }
+        else if (!a.vis && b.vis) op = seg(t, K.drop, 0.3);
+      }
+      c.style.transform = (dx || dy) ? "translate(" + dx.toFixed(2) + "px," + dy.toFixed(2) + "px)" : "";
+      c.style.opacity = op < 1 ? op.toFixed(3) : "";
+    });
+
+    /* slot left behind, and the lane it is heading for */
+    var so = t >= K.pick + 0.05 && !dropped ? 1 : 0;
+    slot.style.cssText = "left:" + A.x + "px;top:" + A.y + "px;width:" + A.w + "px;height:" + A.h + "px;opacity:" + so;
+    var over = Math.min(seg(t, K.drop - 0.45, 0.2), 1 - seg(t, K.drop + 0.05, 0.3));
+    Object.keys(lanes).forEach(function (k) { lanes[k].lane.querySelector(".bg").style.opacity = k === "joon" ? over : ""; });
+
+    /* the summary line rewrites itself */
+    paintLine(migLine, FROM, TO, t - K.line);
+    migLine.dataset.kind = t >= K.line + 0.35 ? "moved" : "late";
+    counts();
+
+    /* the words land */
+    for (var i = 0; i < h1Lines.length; i++) {
+      var q = eout(seg(t, K.h1 + i * 0.12, 0.55));
+      h1Lines[i].style.opacity = q < 1 ? q.toFixed(3) : "";
+      h1Lines[i].style.transform = q < 1 ? "translateY(" + (18 * (1 - q)).toFixed(2) + "px)" : "";
+    }
+    var s = eout(seg(t, K.side, 0.5));
+    side.style.opacity = s < 1 ? s.toFixed(3) : "";
+    side.style.transform = s < 1 ? "translateY(" + (10 * (1 - s)).toFixed(2) + "px)" : "";
+
+    replayBtn.classList.toggle("on", t >= END);
+  }
+
+  function counts() {
+    ["shipped", "moved", "late"].forEach(function (k) {
+      var n = slist.querySelectorAll('.sl[data-kind="' + k + '"]').length, e = document.getElementById("n-" + k);
+      if (e.textContent !== String(n)) e.textContent = n;
+    });
+  }
+
+  /* One summary line, from one state to another, at local time lt (s). Used by the auto moment and by every live drag. */
+  function common(a, b) { var i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; }
+  function paintLine(row, from, to, lt) {
+    var hl = lt < 0 ? 0 : lt < 0.1 ? lt / 0.1 : lt < 1.3 ? 1 : 1 - clamp((lt - 1.3) / 0.5);
+    row.style.setProperty("--hl", hl.toFixed(3));
+    var tail = row.querySelector(".tail"), ch = row.querySelector(".lw-chip"), a = row.querySelector(".lw-av");
+    var k = common(from.tail, to.tail), text, chipOn, chipOp = 1, cs = from.chip;
+    if (lt < 0.15) {
+      text = from.tail; chipOn = !!from.chip; chipOp = 1 - clamp((lt - 0.05) / 0.1);
+    } else if (lt < 0.35) {
+      var n = Math.round(lerp(from.tail.length, k, clamp((lt - 0.15) / 0.2)));
+      text = from.tail.slice(0, n); chipOn = false;
+    } else {
+      var m = Math.round(lerp(k, to.tail.length, clamp((lt - 0.35) / 0.4)));
+      text = to.tail.slice(0, m); chipOn = !!to.chip && lt >= 0.75; cs = to.chip;
+    }
+    if (lt < 0) { text = from.tail; chipOn = !!from.chip; chipOp = 1; }
+    tail.textContent = text;
+    if (chipOn && cs) { ch.className = "lw-chip " + cs.cls; ch.textContent = cs.txt; ch.style.display = ""; ch.style.opacity = chipOp < 1 ? chipOp.toFixed(3) : ""; }
+    else ch.style.display = "none";
+    var o = lt < 0.1 ? from.o : to.o;
+    a.className = "lw-av" + (o.av ? " " + o.av : ""); a.textContent = o.ini;
+  }
+
+  /* ---------- clock: autoplay, seek, reduced motion ---------- */
+  var mode = "auto", raf = 0, t0 = 0, curT = 0, live = false;
+  function seekTime() { var m = /t=([\d.]+)/.exec(location.hash); return m ? parseFloat(m[1]) : null; }
+
+  function tick(now) {
+    curT = (now - t0) / 1000;
+    if (curT >= END) { curT = END; render(END); goLive(); return; }
+    render(curT);
+    raf = requestAnimationFrame(tick);
+  }
+  function play() {
+    cancelAnimationFrame(raf); live = false; build(); M = null; measure(); curT = 0; render(0);
+    t0 = performance.now(); raf = requestAnimationFrame(tick);
+  }
+  function goLive() { cancelAnimationFrame(raf); live = true; replayBtn.classList.add("on"); }
+  function finishAuto() { if (live) return; cancelAnimationFrame(raf); curT = END; render(END); goLive(); }
+
+  function start() {
+    var s = seekTime();
+    if (s != null) { mode = "seek"; cancelAnimationFrame(raf); build(); M = null; measure(); curT = Math.min(s, END); render(curT); if (curT >= END) live = true; return; }
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { mode = "still"; build(); measure(); render(END); goLive(); return; }
+    mode = "auto"; play();
+  }
+  replayBtn.addEventListener("click", function () { if (mode === "seek") { history.replaceState(null, "", location.pathname); mode = "auto"; } play(); });
+  window.addEventListener("hashchange", start);
+  window.addEventListener("resize", function () { if (live) return; M = null; measure(); render(curT); });
+
+  /* ---------- live drag: mouse anywhere on a card, touch on the grip; the board still scrolls vertically ---------- */
+  var drag = null;
+  function laneAt(x, y) {
+    var b = board.getBoundingClientRect();
+    if (x < b.left - 24 || x > b.right + 24) return null;
+    var keys = Object.keys(lanes);
+    for (var i = 0; i < keys.length; i++) {
+      var r = lanes[keys[i]].lane.getBoundingClientRect();
+      if (r.height && y >= r.top && y < r.bottom) return keys[i];
+    }
+    return null;
+  }
+  function setOver(k) { Object.keys(lanes).forEach(function (j) { var bg = lanes[j].lane.querySelector(".bg"); bg.style.opacity = ""; lanes[j].lane.classList.toggle("over", j === k); }); }
+
+  board.addEventListener("pointerdown", function (e) {
+    var c = e.target.closest(".card");
+    if (!c || c.dataset.st === "done" || e.button > 0) return;
+    if (e.pointerType === "touch" && !e.target.closest(".grip")) return;
+    finishAuto();
+    e.preventDefault();
+    drag = { c: c, x0: e.clientX, y0: e.clientY, on: false, id: e.pointerId, from: c.dataset.owner };
+    try { c.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  board.addEventListener("pointermove", function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.on) { if (Math.abs(dx) + Math.abs(dy) < 5) return; drag.on = true; drag.c.classList.add("lifted"); }
+    drag.c.style.transform = "translate(" + dx + "px," + dy + "px) scale(1.03)";
+    var k = laneAt(e.clientX, e.clientY);
+    setOver(k && k !== drag.from ? k : null);
+  });
+  function endDrag(e, cancel) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var d = drag; drag = null;
+    setOver(null);
+    if (!d.on) { d.c.style.transform = ""; return; }
+    var k = cancel ? null : laneAt(e.clientX, e.clientY);
+    var first = snapshot();
+    first[d.c.dataset.id] = d.c.getBoundingClientRect();
+    d.c.style.transform = "";
+    if (k && k !== d.from) {
+      lanes[k].cards.insertBefore(d.c, lanes[k].cards.firstChild);
+      d.c.dataset.moved = String(Date.now());
+      var wasLate = d.c.dataset.st === "late";
+      var due = wasLate ? TODAY : d.c.dataset.due, st = wasLate ? "ok" : d.c.dataset.st;
+      markTops();
+      flip(first, d.c);
+      setTimeout(function () { setCard(d.c, k, due, st); }, 140);
+      rewrite(d.c.dataset.id, d.from, k, due, wasLate);
+    } else {
+      flip(first, d.c);
+    }
+  }
+  board.addEventListener("pointerup", function (e) { endDrag(e, false); });
+  board.addEventListener("pointercancel", function (e) { endDrag(e, true); });
+
+  function snapshot() { var s = {}; Object.keys(cards).forEach(function (k) { s[k] = cards[k].getBoundingClientRect(); }); return s; }
+  function flip(first, lifted) {
+    Object.keys(cards).forEach(function (k) {
+      var c = cards[k], a = first[k], b = c.getBoundingClientRect();
+      if (!b.width) return;
+      c.style.opacity = "";
+      if (!a.width) { c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease-out" }); return; }
+      var dx = (a.left + a.width / 2) - (b.left + b.width / 2), dy = (a.top + a.height / 2) - (b.top + b.height / 2);
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && c !== lifted) return;
+      var from = "translate(" + dx + "px," + dy + "px)" + (c === lifted ? " scale(1.03)" : "");
+      var anim = c.animate([{ transform: from }, { transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.7,.2,1)" });
+      if (c === lifted) anim.onfinish = function () { c.classList.remove("lifted"); };
+    });
+    if (lifted && !lifted.getAnimations().length) lifted.classList.remove("lifted");
+  }
+
+  /* the summary rewrites the moved task's line, or writes a new one */
+  function rewrite(id, fromOwner, toOwner, due, wasLate) {
+    var row = slist.querySelector('.sl[data-task="' + id + '"]');
+    var to = lineParts("moved", toOwner, due), from;
+    if (row) {
+      var tail = row.querySelector(".tail").textContent, ch = row.querySelector(".lw-chip");
+      var chipOn = ch.style.display !== "none";
+      var avEl = row.querySelector(".lw-av");
+      var cur = OWNERS.filter(function (o) { return o.ini === avEl.textContent; })[0] || owner(fromOwner);
+      from = { tail: tail, chip: chipOn ? { cls: ch.className.replace("lw-chip ", ""), txt: ch.textContent } : null, o: cur };
+    } else {
+      row = makeLine({ task: id, kind: "moved", who: toOwner, due: due, mob: true });
+      var moved = slist.querySelectorAll('.sl[data-kind="moved"]');
+      var after = moved.length ? moved[moved.length - 1] : null;
+      if (after) slist.insertBefore(row, after.nextSibling);
+      else slist.insertBefore(row, slist.querySelector('.sl[data-kind="late"]'));
+      from = { tail: "", chip: null, o: to.o };
+      row.dataset.kind = "new";
+    }
+    var s = performance.now(), my = (row._run = (row._run || 0) + 1);
+    (function step(now) {
+      if (row._run !== my) return;
+      var lt = (now - s) / 1000;
+      paintLine(row, from, to, lt);
+      if (lt >= 0.35 && row.dataset.kind !== "moved") { row.dataset.kind = "moved"; counts(); }
+      if (lt < 1.9) requestAnimationFrame(step);
+    })(s);
+  }
+
+  /* ---------- go, once the face is in ---------- */
+  var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  ready.then(start);
+})();
+</script>
+</body>
+</html>

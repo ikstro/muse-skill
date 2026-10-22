@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nobody owns this — Lanework</title>
+<link rel="stylesheet" href="../lanework-ds.css">
+<!--
+  03 · enemy / tension · «Nobody owns this.» · proof T1.
+  Seed rH_G-hLXNCcrhBEhMNazsSZlvWXyPHR- , read for small choices only:
+  - opens "rH": r before H        -> the card sits to the right of the H1, nudged 24px right of its lane before it drops
+  - three lowercase "h"           -> three other open tasks on the board
+  - 12 lowercase of 29 letters    -> at "12 days" the card has faded to 12/29 = 0.41 opacity
+  - 32 characters                 -> the card hangs 32 x 4 = 128px above its slot before the drop
+  - separators at 2 and 4         -> owner and date snap on 0.2 s apart
+  - ends on "-"                   -> the comp ends on a held still frame (5.2 -> 5.6) before Replay
+-->
+<style>
+  html, body { overflow-x: hidden; }
+  .hero {
+    box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 190px 32px 0;
+    display: grid; grid-template-columns: 520px minmax(0, 1fr); column-gap: 56px;
+    grid-template-areas: "copy board"; align-items: start;
+  }
+  .copy { grid-area: copy; }
+  .h1wrap { grid-area: h; }
+  .h1wrap h1 { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .h1wrap h1 > span { grid-area: 1 / 1; }
+  .lead { grid-area: lead; margin-top: 28px; max-width: 440px; }
+  .act { grid-area: act; margin-top: 32px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .boardwrap { grid-area: board; position: relative; }
+
+  /* Product UI: the board (layout only; colours from DS tokens) */
+  .lw-panel.board { position: relative; overflow: hidden; }
+  .ph { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 14px; box-sizing: border-box; }
+  .ph b { font: 600 15px/20px var(--lw-face); }
+  .ph span { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); }
+  .colhead, .lw-row.t { grid-template-columns: 28px minmax(0, 1fr) 64px 40px 84px; }
+  .colhead { display: grid; gap: 12px; align-items: center; height: 36px; padding: 0 14px; box-sizing: border-box; border-top: 1px solid var(--lw-line); font: 600 12px/16px var(--lw-face); color: var(--lw-ink-3); }
+  .colhead span:last-child { text-align: right; }
+  .glabel { height: 36px; padding: 0 14px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--lw-line); font: 600 13px/18px var(--lw-face); color: var(--lw-ink-2); }
+  .glabel i { font-style: normal; color: var(--lw-ink-3); font-variant-numeric: tabular-nums; }
+  .slot { height: 49px; }
+  #s2 { height: 0; }
+  .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .st { justify-self: end; display: grid; justify-items: end; }
+  .st > * { grid-area: 1 / 1; }
+
+  /* The card (the protagonist): a row lifted off the board */
+  .card { position: absolute; left: 0; top: 0; height: 49px; z-index: 5; }
+  .card .paper { position: absolute; inset: 0; background: var(--lw-page); border-radius: 12px; }
+  .card .outline { position: absolute; inset: 0; box-sizing: border-box; }
+  .card .lw-row { position: absolute; left: 0; right: 0; top: 0; }
+  .avslot { position: relative; width: 28px; height: 28px; }
+  .avslot .ring { position: absolute; inset: 0; box-sizing: border-box; border-radius: 50%; border: 1.5px dashed var(--lw-ink-3); }
+  .avslot .ring.need { border-color: var(--lw-late); }
+  .avslot .lw-av { position: absolute; inset: 0; opacity: 0; }
+  .age { position: absolute; right: 14px; top: 1px; height: 48px; display: flex; align-items: center; font: 500 13px/18px var(--lw-face); color: var(--lw-ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rule { position: absolute; right: 84px; top: 1px; height: 48px; display: flex; align-items: center; font: 500 13px/18px var(--lw-face); color: var(--lw-late); white-space: nowrap; opacity: 0; }
+  .save { font: 600 12px/18px var(--lw-face); color: var(--lw-ink); background: var(--lw-page); border: 1px solid var(--lw-line); border-radius: 6px; padding: 1px 10px; opacity: 0; }
+  .save.pressed { background: var(--lw-surface); }
+  .card .fill { opacity: 0; }
+
+  .post { opacity: 0; }
+  .replay { position: fixed; right: 20px; bottom: 16px; z-index: 30; font: 500 12px/16px var(--lw-face); color: var(--lw-ink-2); background: none; border: 0; padding: 4px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; visibility: hidden; }
+
+  @media (max-width: 734px) {
+    .hero { padding: 24px 16px 0; grid-template-columns: minmax(0, 1fr); grid-template-areas: "h" "board" "lead" "act"; }
+    .copy { display: contents; }
+    .boardwrap { margin-top: 24px; }
+    .lead { margin-top: 20px; }
+    .act { margin-top: 20px; gap: 12px 16px; }
+    .colhead, .xs-hide { display: none; }
+    .lw-row.t { grid-template-columns: 28px minmax(0, 1fr) 36px 72px; }
+    .lw-row.t .ow { display: none; }
+    .rule { right: 14px; top: -36px; height: 36px; }
+  }
+</style>
+</head>
+<body class="lw bg-surface">
+<nav class="lw-nav" aria-label="Main">
+  <div class="lw-nav-in">
+    <a class="lw-brand" href="#" aria-label="Lanework home">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3" width="18" height="4" rx="2" fill="#0f7b5f"/><rect x="2" y="9" width="12" height="4" rx="2" fill="#15171c"/><rect x="2" y="15" width="15" height="4" rx="2" fill="#15171c" opacity=".35"/></svg>
+      Lanework
+    </a>
+    <div class="lw-links"><a href="#">Product</a><a href="#">Pricing</a><a href="#">Customers</a><a href="#">Changelog</a></div>
+    <div class="lw-nav-end">
+      <a class="lw-login" href="#">Log in</a>
+      <a class="lw-btn" href="#">Start free</a>
+      <span class="lw-menu" aria-hidden="true"></span>
+    </div>
+  </div>
+</nav>
+
+<main class="hero">
+  <div class="copy">
+    <div class="h1wrap">
+      <h1 class="lw-h1" aria-label="Now somebody does."><span id="h1a" aria-hidden="true">Nobody owns this.</span><span id="h1b" aria-hidden="true" style="opacity:0">Now somebody does.</span></h1>
+    </div>
+    <p class="lw-lead lead post">Every Lanework task has one owner and one date. Without an owner, it won’t save.</p>
+    <div class="act post">
+      <a class="lw-btn" href="#">Start free</a>
+      <span class="lw-price">$6 per person / month · free for 3</span>
+    </div>
+  </div>
+
+  <div class="boardwrap" id="bw">
+    <div class="lw-panel board" id="board">
+      <div class="ph"><b>Halden website relaunch</b><span>Northfield Studio</span></div>
+      <div class="colhead"><span></span><span>Task</span><span>Owner</span><span>Due</span><span>Status</span></div>
+      <div class="glabel">Open <i id="nOpen">3</i></div>
+      <div class="slot" id="s1"></div>
+      <div class="lw-row t"><span class="lw-av a2">TF</span><span class="nm">Homepage hero copy v3</span><span class="ow lw-muted">Tomás</span><span class="du lw-muted">Wed</span><span class="st"><span class="lw-chip ok">on track</span></span></div>
+      <div class="lw-row t"><span class="lw-av a6">ID</span><span class="nm">Cookie banner legal review</span><span class="ow lw-muted">Ines</span><span class="du lw-muted">Thu</span><span class="st"><span class="lw-chip wait">waiting</span></span></div>
+      <div class="lw-row t"><span class="lw-av a4">DR</span><span class="nm">Migrate blog redirects</span><span class="ow lw-muted">Dev</span><span class="du lw-muted">Fri</span><span class="st"><span class="lw-chip ok">on track</span></span></div>
+      <div class="glabel">Done <i id="nDone">2</i></div>
+      <div class="slot" id="s2"></div>
+      <div class="lw-row t"><span class="lw-av a5">JP</span><span class="nm">QA on Safari 18</span><span class="ow lw-muted">Joon</span><span class="du lw-muted">Mon</span><span class="st"><span class="lw-chip done">done</span></span></div>
+      <div class="lw-row t xs-hide"><span class="lw-av a3">AL</span><span class="nm">Product photos for /shop</span><span class="ow lw-muted">Ana</span><span class="du lw-muted">Tue</span><span class="st"><span class="lw-chip done">done</span></span></div>
+    </div>
+
+    <div class="card" id="card" aria-label="Task: Fix invoice PDF totals">
+      <div class="paper"></div>
+      <div class="lw-panel outline" id="outline"></div>
+      <div class="lw-row t" id="crow">
+        <span class="avslot"><span class="ring" id="ring"></span><span class="lw-av" id="mira">MK</span></span>
+        <span class="nm">Fix invoice PDF totals</span>
+        <span class="ow lw-muted fill" id="cOw">Mira</span>
+        <span class="du lw-muted fill" id="cDu">Thu</span>
+        <span class="st"><span class="save" id="save">Save</span><span class="lw-chip ok fill" id="cOk">on track</span><span class="lw-chip done fill" id="cDone">done</span></span>
+      </div>
+      <span class="age" id="age">unassigned · 1 day</span>
+      <span class="rule" id="rule">Every task needs an owner</span>
+    </div>
+  </div>
+</main>
+
+<button class="replay" id="replay" type="button">Replay</button>
+
+<script>
+(function () {
+  var END = 5.6;
+  var $ = function (id) { return document.getElementById(id); };
+  var card = $('card'), board = $('board'), bw = $('bw'), s1 = $('s1'), s2 = $('s2');
+  var crow = $('crow'), outline = $('outline'), age = $('age'), rule = $('rule');
+  var save = $('save'), ring = $('ring'), mira = $('mira'), cOw = $('cOw'), cDu = $('cDu'), cOk = $('cOk'), cDone = $('cDone');
+  var h1a = $('h1a'), h1b = $('h1b'), nOpen = $('nOpen'), nDone = $('nDone'), replay = $('replay');
+  var posts = document.querySelectorAll('.post');
+
+  function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return clamp((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function outCubic(k) { return 1 - Math.pow(1 - k, 3); }
+  function inOutCubic(k) { return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+  function outBack(k) { var c = 1.4; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); }
+
+  // Geometry, measured from the real layout (both slot states)
+  var G = {};
+  function measure() {
+    s1.style.height = '49px'; s2.style.height = '0px';
+    var top0 = board.offsetTop + board.clientTop;
+    G.slotA = top0 + s1.offsetTop;
+    s1.style.height = '0px'; s2.style.height = '49px';
+    G.slotB = top0 + s2.offsetTop;
+    G.left = board.offsetLeft + board.clientLeft;
+    G.width = board.clientWidth;
+    var mobile = window.innerWidth <= 734;
+    var h1 = $('h1a').getBoundingClientRect(), bwr = bw.getBoundingClientRect();
+    var room = (bwr.top + G.slotA) - h1.bottom - 20;
+    G.lift = Math.max(40, Math.min(128, mobile ? room : 128));
+    G.nudge = mobile ? 0 : 24;
+  }
+
+  function render(t) {
+    // BEFORE 0-1.8: the card alone, ageing; only it changes
+    var days = 1 + Math.round(11 * Math.pow(seg(t, 0, 1.6), 1.6));
+    age.textContent = 'unassigned · ' + days + (days === 1 ? ' day' : ' days');
+    var fade = 1 - (1 - 12 / 29) * seg(t, 0, 1.8);           // loses contrast
+    var regain = seg(t, 3.25, 3.55);
+    var contentOp = lerp(fade, 1, regain);
+
+    // DURING 1.8-3.6: board appears, card drops in, Save is refused, owner + date snap on
+    board.style.opacity = outCubic(seg(t, 1.8, 2.05));
+    var drop = outBack(seg(t, 2.0, 2.45));
+    var move = inOutCubic(seg(t, 3.75, 4.3));
+    var y = lerp(G.slotA - G.lift, G.slotA, drop);
+    y = lerp(y, G.slotB, move);
+    var x = G.left + lerp(G.nudge, 0, outCubic(seg(t, 2.0, 2.45)));
+    card.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+    card.style.width = G.width + 'px';
+    s1.style.height = lerp(49, 0, move) + 'px';
+    s2.style.height = lerp(0, 49, move) + 'px';
+
+    var lifted = Math.max(1 - seg(t, 2.3, 2.45), seg(t, 3.7, 3.8) - seg(t, 4.25, 4.4));
+    outline.style.opacity = lifted;
+
+    crow.style.opacity = contentOp;
+    age.style.opacity = contentOp * (1 - seg(t, 2.0, 2.15));
+    save.style.opacity = seg(t, 2.3, 2.45) * (1 - seg(t, 3.45, 3.55));
+    save.classList.toggle('pressed', t >= 2.55 && t < 2.7);
+    save.style.transform = (t >= 2.55 && t < 2.7) ? 'translateY(1px)' : '';
+    var need = t >= 2.68 && t < 3.25;
+    ring.classList.toggle('need', need);
+    rule.style.opacity = seg(t, 2.68, 2.8) * (1 - seg(t, 3.25, 3.33));
+
+    var snap = seg(t, 3.25, 3.41);
+    mira.style.opacity = snap > 0 ? 1 : 0;
+    mira.style.transform = 'scale(' + lerp(.45, 1, outBack(snap)).toFixed(3) + ')';
+    ring.style.opacity = 1 - (snap > 0 ? 1 : 0);
+    cOw.style.opacity = seg(t, 3.25, 3.35);
+    cDu.style.opacity = seg(t, 3.45, 3.55);
+    cOk.style.opacity = seg(t, 3.55, 3.65) * (1 - seg(t, 4.25, 4.33));
+    cDone.style.opacity = seg(t, 4.28, 4.38);
+
+    nOpen.textContent = (t >= 3.55 && t < 4.3) ? '4' : '3';
+    nDone.textContent = t >= 4.3 ? '3' : '2';
+
+    // AFTER 3.6-5.6: moved to Done (above), H1 swaps, action arrives, hold
+    var sw = seg(t, 4.5, 4.62);
+    h1a.style.opacity = 1 - sw;
+    h1b.style.opacity = sw;
+    var p = outCubic(seg(t, 4.85, 5.2));
+    for (var i = 0; i < posts.length; i++) {
+      posts[i].style.opacity = p;
+      posts[i].style.transform = 'translateY(' + (8 * (1 - p)).toFixed(2) + 'px)';
+    }
+    replay.style.visibility = t >= END ? 'visible' : 'hidden';
+  }
+
+  var raf = 0, start = 0, cur = 0;
+  function tick(now) {
+    if (!start) start = now;
+    cur = Math.min(END, (now - start) / 1000);
+    render(cur);
+    if (cur < END) raf = requestAnimationFrame(tick);
+  }
+  function play() { cancelAnimationFrame(raf); start = 0; raf = requestAnimationFrame(tick); }
+  function seekFromHash() {
+    var m = /t=([\d.]+)/.exec(location.hash);
+    return m ? Math.min(END, Math.max(0, parseFloat(m[1]))) : null;
+  }
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function boot() {
+    measure();
+    var s = seekFromHash();
+    if (s !== null) { cancelAnimationFrame(raf); cur = s; render(s); }
+    else if (reduced) { cur = END; render(END); }
+    else { render(0); play(); }
+  }
+  replay.addEventListener('click', function () { if (reduced) return; history.replaceState(null, '', location.pathname); play(); });
+  window.addEventListener('hashchange', boot);
+  window.addEventListener('resize', function () { measure(); render(cur); });
+  measure(); render(0);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(boot);
+})();
+</script>
+</body>
+</html>

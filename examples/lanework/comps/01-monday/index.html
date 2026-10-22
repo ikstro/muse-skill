@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lanework — Monday, 9:40. Sorted by 9:41.</title>
+<link rel="stylesheet" href="../lanework-ds.css">
+<style>
+  /* DS classes are only positioned here; own elements use DS tokens. */
+  html, body { overflow-x: hidden; }
+  .hero {
+    box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 136px 32px 64px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 32px;
+    grid-template-areas: "h1 h1" "lead act" "stage stage";
+  }
+  .top, .hl { display: contents; }
+  .hero .lw-h1 { grid-area: h1; }
+  .hero .lw-lead { grid-area: lead; margin-top: 18px; align-self: center; }
+  .act { grid-area: act; align-self: center; margin-top: 18px; display: flex; align-items: center; gap: 16px; }
+  .h-b { display: inline-block; }
+  .stage {
+    grid-area: stage; margin-top: 48px;
+    display: grid; grid-template-columns: minmax(0, 39fr) minmax(0, 61fr); column-gap: 48px; align-items: start;
+  }
+  .tw { overflow: hidden; }
+
+  /* Thread (the "before"): the brand's own UI, not a chat-app copy */
+  .th-head { display: flex; align-items: baseline; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--lw-line); }
+  .th-title { font: 600 15px/20px var(--lw-face); color: var(--lw-ink); }
+  .th-sub { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-3); }
+  .msgs { padding: 8px 16px 14px; }
+  .msg { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; padding: 8px 0; }
+  .msg .lw-av { margin-top: 2px; }
+  .meta { font: 600 14px/20px var(--lw-face); color: var(--lw-ink); }
+  .meta time { font-weight: 500; font-size: 13px; color: var(--lw-ink-3); margin-left: 6px; font-variant-numeric: tabular-nums; }
+  .bubble, .flyer {
+    box-sizing: border-box; padding: 6px 10px; border-radius: 10px;
+    font: 500 14px/20px var(--lw-face); color: var(--lw-ink); background: var(--lw-surface);
+  }
+  .bubble { display: inline-block; margin-top: 4px; }
+
+  /* Monday view */
+  .mv { overflow: hidden; }
+  .mv-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--lw-line); }
+  .mv-title { font: 700 18px/24px var(--lw-face); letter-spacing: -0.01em; color: var(--lw-ink); }
+  .mv-sub { font: 500 14px/20px var(--lw-face); color: var(--lw-ink-2); }
+  .clock { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/20px var(--lw-face); color: var(--lw-ink); font-variant-numeric: tabular-nums; padding: 4px 10px; border: 1px solid var(--lw-line); border-radius: 8px; white-space: nowrap; }
+  .clock svg { width: 14px; height: 14px; display: block; }
+  .roll { display: inline-block; height: 20px; overflow: hidden; vertical-align: top; }
+  .roll > span { display: block; }
+  .roll i { display: block; font-style: normal; height: 20px; }
+
+  .cols, .mv .lw-row { grid-template-columns: 28px minmax(0, 1fr) 132px 72px 84px; }
+  .cols { display: grid; gap: 12px; padding: 10px 20px 8px; font: 500 13px/18px var(--lw-face); color: var(--lw-ink-3); border-bottom: 1px solid var(--lw-line); }
+  .mv .lw-row { position: relative; padding-left: 20px; padding-right: 20px; }
+  .mv .lw-row > span { min-width: 0; white-space: nowrap; }
+  .tn { color: var(--lw-ink); }
+  .own-m { display: none; }
+  .due { font-variant-numeric: tabular-nums; }
+  .chipw { justify-self: start; }
+  .ph { position: absolute; inset: 0; pointer-events: none; }
+  .ph::before { content: ""; position: absolute; left: 20px; top: 50%; width: 26px; height: 26px; margin-top: -14px; border: 1px dashed #cfcfc8; border-radius: 50%; }
+  .ph::after { content: ""; position: absolute; left: 60px; top: 50%; width: 30%; height: 8px; margin-top: -4px; border-radius: 4px; background: var(--lw-surface); }
+  .mv-foot { padding: 12px 20px 14px; border-top: 1px solid var(--lw-line); font: 500 13px/18px var(--lw-face); color: var(--lw-ink-3); font-variant-numeric: tabular-nums; }
+
+  .flyer { position: absolute; left: 0; top: 0; z-index: 30; display: none; white-space: nowrap; pointer-events: none; border: 1px solid transparent; }
+  .flyer.on { display: grid; }
+  .flyer > span { grid-area: 1 / 1; }
+
+  .replay { position: fixed; right: 16px; bottom: 14px; z-index: 40; border: 0; background: none; padding: 4px; font: 500 12px/16px var(--lw-face); color: var(--lw-ink-2); cursor: pointer; visibility: hidden; }
+  .replay.on { visibility: visible; }
+
+  @media (max-width: 1068px) {
+    .hero { padding-top: 96px; }
+    .cols, .mv .lw-row { grid-template-columns: 28px minmax(0, 1fr) 116px 60px 84px; }
+  }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "h1" "stage" "lead" "act"; padding-top: 32px; }
+    .act { align-self: start; margin-top: 22px; flex-wrap: wrap; gap: 10px 14px; }
+    .hero .lw-lead { margin-top: 22px; }
+    .stage { grid-template-columns: minmax(0, 1fr); margin-top: 24px; row-gap: 16px; }
+  }
+  @media (max-width: 734px) {
+    .hero { padding: 20px 16px 48px; }
+    .stage { margin-top: 18px; row-gap: 12px; }
+    .act { margin-top: 18px; }
+    .hero .lw-lead { margin-top: 18px; }
+    .mv-head { padding: 12px 14px; }
+    .mv-sub .wk { display: none; }
+    .cols { display: none; }
+    .mv .lw-row { grid-template-columns: 28px minmax(0, 1fr) auto auto; padding-left: 14px; padding-right: 14px; }
+    .own { display: none; }
+    .own-m { display: block; font: 500 13px/18px var(--lw-face); color: var(--lw-ink-2); }
+    .ph::before { left: 14px; }
+    .ph::after { left: 54px; width: 44%; }
+    .mv-foot { padding: 10px 14px 12px; }
+    .th-head { padding: 11px 14px; }
+    .msgs { padding: 4px 14px 8px; }
+    .msg { padding: 5px 0; }
+    .bubble { margin-top: 2px; }
+  }
+</style>
+</head>
+<body class="lw bg-surface">
+<nav class="lw-nav" aria-label="Main">
+  <div class="lw-nav-in">
+    <a class="lw-brand" href="#" aria-label="Lanework home">
+      <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="3" width="18" height="4" rx="2" fill="#0f7b5f"/><rect x="2" y="9" width="12" height="4" rx="2" fill="#15171c"/><rect x="2" y="15" width="15" height="4" rx="2" fill="#15171c" opacity=".35"/></svg>
+      Lanework
+    </a>
+    <div class="lw-links"><a href="#">Product</a><a href="#">Pricing</a><a href="#">Customers</a><a href="#">Changelog</a></div>
+    <div class="lw-nav-end">
+      <a class="lw-login" href="#">Log in</a>
+      <a class="lw-btn" href="#">Start free</a>
+      <span class="lw-menu" aria-hidden="true"></span>
+    </div>
+  </div>
+</nav>
+
+<main class="hero">
+  <div class="top">
+    <div class="hl">
+      <h1 class="lw-h1"><span class="h-a">Monday, 9:40.</span> <span class="h-b">Sorted by 9:41.</span></h1>
+      <p class="lw-lead">One owner and one date per task. The week reads in about 30 seconds.</p>
+    </div>
+    <div class="act"><a class="lw-btn" href="#">Start free</a><span class="lw-price">$6 per person / month · free for 3</span></div>
+  </div>
+
+  <div class="stage">
+    <div class="tw" aria-hidden="true">
+      <section class="lw-panel thread">
+        <div class="th-head"><span class="th-title">Team chat</span><span class="th-sub">Northfield Studio</span></div>
+        <div class="msgs">
+          <div class="msg"><span class="lw-av">MK</span><div><div class="meta">Mira Kowalski<time>9:40</time></div><span class="bubble">who's on the invoice fix?</span></div></div>
+          <div class="msg"><span class="lw-av a6">ID</span><div><div class="meta">Ines Duarte<time>9:40</time></div><span class="bubble">is the hero copy final?</span></div></div>
+          <div class="msg"><span class="lw-av">MK</span><div><div class="meta">Mira Kowalski<time>9:40</time></div><span class="bubble">did anyone start the redirects?</span></div></div>
+          <div class="msg"><span class="lw-av a2">TF</span><div><div class="meta">Tomás Ferreira<time>9:40</time></div><span class="bubble">Safari QA — anyone?</span></div></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="lw-panel mv" aria-label="Monday view">
+      <div class="mv-head">
+        <div><div class="mv-title">Monday view</div><div class="mv-sub">Halden website relaunch<span class="wk"> · week of 19 Oct</span></div></div>
+        <span class="clock"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="none" stroke="#5b606b" stroke-width="1.4"/><path d="M7 3.8V7l2.2 1.4" fill="none" stroke="#5b606b" stroke-width="1.4" stroke-linecap="round"/></svg><span>Mon 9:4<span class="roll"><span><i>0</i><i>1</i></span></span></span></span>
+      </div>
+      <div class="cols"><span></span><span>Task</span><span>Owner</span><span>Due</span><span>Status</span></div>
+      <div class="rows">
+        <div class="lw-row"><span class="lw-av a4">DR</span><span class="tn">Fix invoice PDF totals<span class="own-m">Dev Raman</span></span><span class="own">Dev Raman</span><span class="due">Tue 20</span><span class="chipw"><span class="lw-chip ok">On track</span></span><i class="ph"></i></div>
+        <div class="lw-row"><span class="lw-av a2">TF</span><span class="tn">Homepage hero copy v3<span class="own-m">Tomás Ferreira</span></span><span class="own">Tomás Ferreira</span><span class="due">Thu 22</span><span class="chipw"><span class="lw-chip wait">Waiting</span></span><i class="ph"></i></div>
+        <div class="lw-row"><span class="lw-av a3">AL</span><span class="tn">Migrate blog redirects<span class="own-m">Ana Lindqvist</span></span><span class="own">Ana Lindqvist</span><span class="due">Fri 23</span><span class="chipw"><span class="lw-chip ok">On track</span></span><i class="ph"></i></div>
+        <div class="lw-row"><span class="lw-av a5">JP</span><span class="tn">QA on Safari 18<span class="own-m">Joon Park</span></span><span class="own">Joon Park</span><span class="due">Tue 20</span><span class="chipw"><span class="lw-chip ok">On track</span></span><i class="ph"></i></div>
+      </div>
+      <div class="mv-foot"><span class="cnt">0</span> tasks · <span class="cnt">0</span> owners · 0 unassigned</div>
+    </section>
+  </div>
+</main>
+
+<div class="flyer" aria-hidden="true"><span class="q"></span><span class="k"></span></div>
+<button class="replay" type="button">Replay</button>
+
+<script>
+(function () {
+  var END = 5.6;
+  var APPEAR = [0.15, 0.45, 0.75, 1.05];   // before: the thread piles up; the clock stays still
+  var LIFT = 1.5, STEP = 0.475, FLY = 0.32; // during: one question becomes one row, one at a time
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var msgs = $$('.msg'), bubbles = $$('.bubble'), rows = $$('.mv .lw-row'), cnts = $$('.cnt');
+  var stage = $('.stage'), tw = $('.tw'), thread = $('.thread');
+  var hb = $('.h-b'), lead = $('.hero .lw-lead'), act = $('.act');
+  var roll = $('.roll > span');
+  var flyer = $('.flyer'), fq = $('.flyer .q'), fk = $('.flyer .k');
+  var replay = $('.replay');
+  var tasks = rows.map(function (r) { return r.querySelector('.tn').firstChild.nodeValue; });
+  var wide = matchMedia('(min-width: 861px)');
+  var nat = null, cur = 0;
+
+  function cl(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function eo(x) { x = cl(x); return 1 - Math.pow(1 - x, 3); }
+  function eio(x) { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function op(el, v) { el.style.opacity = v; }
+  function rise(el, k, d) { op(el, k); el.style.transform = 'translateY(' + (d * (1 - k)).toFixed(2) + 'px)'; }
+  function box(el) { var r = el.getBoundingClientRect(); return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height }; }
+
+  function measure() { // natural size of the thread column, before it steps aside
+    stage.style.gridTemplateColumns = ''; stage.style.columnGap = ''; stage.style.rowGap = '';
+    tw.style.height = ''; tw.style.marginBottom = ''; thread.style.width = '';
+    nat = { w: tw.offsetWidth, h: tw.offsetHeight };
+  }
+
+  function render(t) {
+    cur = t;
+    if (!nat) measure();
+    var flying = -1, owned = 0;
+    msgs.forEach(function (m, i) {
+      var a = eo((t - APPEAR[i]) / 0.3), L = LIFT + i * STEP, gone = eo((t - L) / 0.15);
+      m.style.transform = 'translateY(' + (8 * (1 - a)).toFixed(2) + 'px)';
+      op(m.querySelector('.lw-av'), a * (1 - gone)); op(m.querySelector('.meta'), a * (1 - gone));
+      op(bubbles[i], t >= L ? 0 : a);
+      if (t >= L && t < L + FLY) flying = i;
+
+      var r = rows[i], landed = t >= L + FLY;
+      if (landed) owned++;
+      op(r.querySelector('.tn'), landed ? 1 : 0);
+      var ra = r.querySelector('.lw-av'), k = eo((t - (L + FLY)) / 0.15);
+      op(ra, k); ra.style.transform = 'scale(' + (0.7 + 0.3 * k).toFixed(3) + ')';
+      var k2 = eo((t - (L + FLY + 0.04)) / 0.14);
+      ['.own', '.own-m', '.due', '.chipw'].forEach(function (s) { op(r.querySelector(s), k2); });
+      op(r.querySelector('.ph'), 1 - cl((t - (L + FLY - 0.1)) / 0.1));
+    });
+    cnts.forEach(function (c) { c.textContent = owned; });
+
+    // after: the clock ticks once, the thread steps aside, the Monday view takes the width
+    roll.style.transform = 'translateY(' + (-20 * eio((t - 3.45) / 0.3)).toFixed(2) + 'px)';
+    var th = eio((t - 3.6) / 0.3);
+    op(thread, 1 - th); thread.style.visibility = th >= 1 ? 'hidden' : 'visible';
+    var w = eio((t - 3.9) / 0.5);
+    if (wide.matches) {
+      stage.style.gridTemplateColumns = 'minmax(0,' + (39 * (1 - w)).toFixed(3) + 'fr) minmax(0,' + (61 + 39 * w).toFixed(3) + 'fr)';
+      stage.style.columnGap = (48 * (1 - w)).toFixed(2) + 'px';
+      thread.style.width = nat.w + 'px';
+      tw.style.height = w > 0 ? (nat.h * (1 - w)).toFixed(2) + 'px' : '';
+      tw.style.marginBottom = '';
+    } else {
+      stage.style.gridTemplateColumns = ''; stage.style.columnGap = ''; thread.style.width = '';
+      var gap = parseFloat(getComputedStyle(stage).rowGap) || 0;
+      tw.style.height = w > 0 ? (nat.h * (1 - w)).toFixed(2) + 'px' : '';
+      tw.style.marginBottom = (-gap * w).toFixed(2) + 'px';
+    }
+
+    // the headline completes: "Sorted by 9:41.", then the lead, then the action
+    rise(hb, eo((t - 4.35) / 0.5), 14);
+    rise(lead, eo((t - 4.8) / 0.32), 10);
+    rise(act, eo((t - 5.05) / 0.32), 10);
+    replay.className = 'replay' + (t >= END ? ' on' : '');
+
+    if (flying >= 0) { // after layout is settled for this frame
+      var i = flying, p = (t - (LIFT + i * STEP)) / FLY;
+      var s = box(bubbles[i]), tn = rows[i].querySelector('.tn');
+      var rg = document.createRange(); rg.selectNodeContents(tn.firstChild);
+      var rr = rg.getBoundingClientRect();
+      var dst = { x: rr.left + scrollX - 11, y: rr.top + scrollY - 7, w: rr.width + 22 };
+      var lift = eo(p / 0.2), tr = eio((p - 0.12) / 0.88);
+      var x = lerp(s.x, dst.x, tr), y = lerp(s.y, dst.y, tr) - 5 * lift * (1 - tr) - 22 * Math.sin(Math.PI * tr);
+      flyer.className = 'flyer on';
+      flyer.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      flyer.style.minWidth = lerp(s.w, dst.w, tr).toFixed(1) + 'px';
+      var g = Math.round(lerp(244, 255, tr)), g2 = Math.round(lerp(241, 255, tr));
+      flyer.style.background = 'rgb(' + g + ',' + g + ',' + g2 + ')';
+      var ba = cl(tr * 3) * (1 - cl((p - 0.86) / 0.14));
+      flyer.style.borderColor = 'rgba(207,207,200,' + ba.toFixed(3) + ')';
+      fq.textContent = bubbles[i].textContent; fk.textContent = tasks[i];
+      op(fq, 1 - cl((p - 0.38) / 0.28)); op(fk, cl((p - 0.52) / 0.3));
+    } else {
+      flyer.className = 'flyer';
+    }
+  }
+
+  var raf = 0, t0 = 0;
+  function loop(now) {
+    var t = (now - t0) / 1000;
+    render(Math.min(t, END));
+    if (t < END) raf = requestAnimationFrame(loop);
+  }
+  function play() { cancelAnimationFrame(raf); t0 = performance.now(); raf = requestAnimationFrame(loop); }
+  function hashT() { var m = /t=([\d.]+)/.exec(location.hash); return m ? Math.min(parseFloat(m[1]), END) : null; }
+  function start() {
+    nat = null;
+    var h = hashT();
+    if (h !== null) { cancelAnimationFrame(raf); render(h); return; }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { render(END); return; }
+    play();
+  }
+  addEventListener('hashchange', start);
+  addEventListener('resize', function () { var c = cur; render(0); measure(); render(c); });
+  replay.addEventListener('click', function () { if (location.hash) history.replaceState(null, '', location.pathname); play(); });
+  render(0);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () { render(0); measure(); start(); });
+})();
+</script>
+</body>
+</html>
