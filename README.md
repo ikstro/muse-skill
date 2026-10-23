@@ -164,3 +164,7 @@ Muse builds on Anshu Chimala's "How to turn your AI into a world-class designer"
 ## License
 
 [MIT](LICENSE). The Figtree font embedded in the example is under the [SIL Open Font License](examples/lanework/comps/OFL-Figtree.txt).
+
+## Author
+
+Made by [Yevhen Peshynskyi (ikstro)](https://ikstro.com), design automation engineer in Odesa. More tools and the work behind them: [ikstro.com](https://ikstro.com).
