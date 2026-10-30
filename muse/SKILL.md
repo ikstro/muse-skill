@@ -1,8 +1,9 @@
 ---
 name: muse
-description: Original design direction that still belongs to the project's design system. Use this whenever the user wants to invent, explore, redesign, review, critique, or polish any UI surface (landing page, section, hero, screen, component, empty state, 404, email replica, dashboard) and the outcome should look authored rather than templated. Trigger on phrases like "придумай дизайн", "оригинальное направление", "варианты стиля / концепции", "как это может выглядеть", "слишком шаблонно / по-AI-шному / скучно", "сделай интереснее / смелее / тише", "дизайн-ревью / критика / что не так", "отполируй", "design direction", "make it less generic", "explore concepts", "this looks AI-generated", "design critique", "polish this page", or "/muse". Also use it when the user asks for a brand-new page inside an existing product and no direction has been chosen yet. Not for backend, data, or copy-only tasks with no visual surface.
-version: 1.1.0
+description: Manual-only creative design direction that stays inside the project's design system. Run it with /muse when you want an original idea for a page, section or component instead of the template answer.
+version: 1.2.0
 user-invocable: true
+disable-model-invocation: true
 argument-hint: "[target: page, section, component, or URL] [optional steer]"
 ---
 

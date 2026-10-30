@@ -130,7 +130,7 @@ git clone https://github.com/ikstro/muse-skill.git
 Copy-Item -Recurse muse-skill\muse "$HOME\.claude\skills\muse"
 ```
 
-Then, in a project, ask for a design direction ("make this hero less generic", "explore concepts for the pricing page") or type `/muse <target>`.
+Muse runs only when you call it. Claude never starts it on its own, so ordinary UI tasks stay quick. When you want creative direction, type `/muse <target> [steer]`, for example `/muse the pricing page hero, make it less generic`.
 
 Before your first run, open `muse/taste.md` and delete the invented example lines. Muse adds your own reactions there as you go.
 
