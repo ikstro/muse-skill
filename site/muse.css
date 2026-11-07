@@ -1,0 +1,32 @@
+/* Muse site: the locked materials. Primer CSS (MIT) + Mona Sans (OFL); nothing of its own. */
+
+@font-face {
+  font-family: "Mona Sans";
+  src: url("vendor/MonaSans-VF.woff2") format("woff2-variations"), url("vendor/MonaSans-VF.woff2") format("woff2");
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mona Sans Mono";
+  src: url("vendor/MonaSansMono-VF.woff2") format("woff2-variations"), url("vendor/MonaSansMono-VF.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --fontStack-system: "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --fontStack-sansSerif: var(--fontStack-system);
+  --fontStack-monospace: "Mona Sans Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  font-family: var(--fontStack-system);
+}
+
+code, kbd, pre, samp, tt {
+  font-family: var(--fontStack-monospace);
+}

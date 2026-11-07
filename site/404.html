@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Not found · Muse</title>
+  <link rel="stylesheet" href="/muse-skill/vendor/primer.css">
+  <link rel="stylesheet" href="/muse-skill/muse.css">
+</head>
+<body class="color-bg-default color-fg-default">
+  <!-- Placeholder. This page becomes one of the nine widgets of the Muse site. -->
+  <main class="container-lg p-responsive py-6">
+    <div class="blankslate">
+      <h1 class="blankslate-heading">There is no page at this address.</h1>
+      <p class="color-fg-muted"><code id="path"></code></p>
+      <a class="btn btn-primary mt-3" href="/muse-skill/">Muse home</a>
+    </div>
+  </main>
+  <script>document.getElementById('path').textContent = location.pathname;</script>
+</body>
+</html>
