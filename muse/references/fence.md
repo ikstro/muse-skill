@@ -11,6 +11,7 @@ Read, in this order, and tag the source next to each lock:
 3. **Component library**: buttons, pills, cards, frames, captions. Existing components are locks for the surfaces that use them.
 4. **Memory** (`~/.claude/projects/<project>/memory/`): decisions the owner made in earlier sessions that never reached CLAUDE.md. A memory that names a rejected approach is a lock against that approach.
 5. **This skill's `taste.md`**: the owner's standing preferences across projects. Rejects are soft locks: honour by default, mention when a direction deliberately bends one. Pulls are directions the list must serve (see ideation.md, quotas).
+6. **This skill's `record.md`**: what the owner did with earlier ideas. Entries from the same project may come back into the list, tagged `(record)` until the jury; entries from the same mode become the jury's anchors (up to six: three picked, three rejected, with the owner's words). Neither is a lock; both are memory.
 
 Source tags, one per lock:
 - `decided (owner)`: the owner said it, here or in a file they wrote.
@@ -74,7 +75,14 @@ The category's defaults split in two. Name both.
 
 ## Mode
 
-Pick from the surface, not the product. Persuade (visitor decides and acts: marketing, landing, campaign), Operate (visitor completes a task: app UI, admin, tools), Read (visitor understands: docs, articles), Experience (the work itself leads: portfolio, showcase). A product's landing page is Persuade even when the product is a tool. Persuade and Experience have permission for bolder composition; Operate keeps expression behind the task.
+Pick from the surface, not the product. Persuade (visitor decides and acts: marketing, landing, campaign), Operate (visitor completes a task: app UI, admin, tools), Identity (a mark: logo, wordmark, app icon, favicon, tray icon), Read (visitor understands: docs, articles), Experience (the work itself leads: portfolio, showcase). A product's landing page is Persuade even when the product is a tool. Persuade and Experience have permission for bolder composition; Operate keeps expression behind the task.
+
+The mode routes the rest of the run; name the route in the fence:
+
+- **Persuade**, Read, Experience: idea types, the jury rubric (WANT doubled), comps and the critic as in [ideation.md](ideation.md), [critic.md](critic.md) and the Persuade tells in finish.md.
+- **Operate**: idea types are behaviours, the rubric is DONE doubled, CLEAR, TRUST, OWN for behaviour only; after the jury a feature list and one prototype with switches instead of comps; the critic judges the task with the Operate tells. All in [operate.md](operate.md).
+- **Identity**: idea types are marks, the rubric is READ doubled, SAY, LIKE, OWN; sheets at 128, 32 and 16 px instead of comps; the Identity tells. All in [identity.md](identity.md).
+- **Hybrid**: a working component that sits on a selling page (a search widget, a calculator, a configurator, a sign-up form in a hero). Mark the fence `Mode: hybrid (operate inside persuade)`. The first three seconds (what the surface promises before the first tap) are judged with the Persuade rubric; the fields, states and gestures with the Operate rubric; both scores show on the card, and the run follows the Operate path after the jury. The record has a search form run twice: the look-led list produced a costume that was later banned, and the behaviour-led list produced the rules that shipped.
 
 ## URL target
 
@@ -91,7 +99,7 @@ When the target is a live page with no project behind it (a competitor, a page t
 
 ```
 FENCE — <target>
-Mode: <persuade|operate|read|experience>
+Mode: <persuade|operate|identity|hybrid (operate inside persuade)|read|experience>
 
 LOCKS
 - <lock> · <tag> · <source>

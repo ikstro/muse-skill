@@ -21,7 +21,7 @@ Muse runs six mechanisms that keep the work from sliding back to the usual answe
    *In the example:* 21 directions across all ten types.
 
 3. **Randomness from outside.** A model is predictable: given the same task it keeps shipping the same top concept. So about a quarter of the list is built from an external random string that picks an idea type, a moment in the buyer's life, a product fact and one constraint (for instance "the headline is one word"). These are combinations the model would never rank first on its own.
-   *In the example:* «Drag a task. Watch Friday change.» came from the seed, made the board, and was one of four ideas the jury said only this product could stage.
+   *In the example:* six of the 21 directions came from the seed. One of them, «Drag a task. Watch Friday change.», made the board and was one of four ideas the jury said only this product could stage.
 
 4. **Ideas come from a person, not from the product's name.** Attributes and names produce puns. Every direction joins a moment when the buyer is stuck or proud to one fact only this product has.
    *In the example:* "Monday, 9:40, the standup is in its 25th minute" plus "the Monday view shows who owns what" became «Monday, 9:40. Sorted by 9:41.»
@@ -38,15 +38,32 @@ Novelty lives only in the idea. Faces, colours, buttons and navigation stay the 
 
 ## How a run goes
 
-1. **Fence.** What is decided (locks, with a source for each), the brand's principles, who the page is for and the moment they feel the problem, the facts only this product has, what is open, the clichés to exclude and the selling mechanics to keep.
-2. **Wide list.** 20–25 directions in one shape: `[type] «Hook» — Picture — Moment: before / during / after — Want — Proof — Asset`.
-3. **Render (physical products).** A Blender script models the object from its real dimensions, so the board and the comps show the real thing. Digital products are built as real HTML of their interface.
-4. **Jury.** A fresh agent scores the shuffled list: `2 × WANT + CLEAR + OWN + TALK − cliché penalty` (max 25), and writes what the list is missing.
-5. **Idea board.** A local page with the fence, four featured cards (one per idea type, each with a three-frame strip of its moment) and the rest of the list. The owner picks 2 to 4.
-6. **Motion comps.** Each pick becomes a 5–6 second live first viewport in the project's design system, recorded frame by frame and laid out as a contact sheet.
-7. **Brief, build, one critic round, finish.** The owner reacts in their own words, one direction becomes a brief, it is built, a fresh critic reviews it once from screenshots, and a restraint pass removes anything without a job.
+0. **Fence.** What is decided (locks, with a source for each), the brand's principles, who the page is for and the moment they feel the problem, the facts only this product has, what is open, the clichés to exclude and the selling mechanics to keep. The fence also names the mode (see below), which routes every later step.
+1. **Wide list, jury, idea board.** 20–25 directions in one shape: `[type] «Hook» — Picture — Moment: before / during / after — Want — Proof — Asset`. A physical product is modelled in Blender first, so the board shows the real thing. A fresh agent, calibrated on what this owner picked and rejected before, scores the shuffled list (on a selling page: `2 × WANT + CLEAR + OWN + TALK − cliché penalty`, max 25) and writes what the list is missing. The owner sees a local page: the fence, three or four featured cards with a three-frame strip each, every other viable entry with one frame. They pick 2 to 4, or combine parts of several.
+2. **Sketches.** On a selling page each pick becomes a 5–6 second live first viewport in the project's design system, recorded frame by frame as a contact sheet. On a working surface the picks become features of one prototype with switches. For a mark, sheets at 128, 32 and 16 px.
+3. **Reaction and brief.** The owner reacts in their own words; one direction (or a combination) becomes a brief.
+4. **Build.** In the lab folder, never in production until the owner says so.
+5. **Critic.** One round by a fresh agent that sees only screenshots, the locks and the tells for the mode. More rounds only when asked.
+6. **Finish.** A restraint pass removes anything without a job; the run's reactions go to `taste.md`, its verdicts to `record.md`.
 
-Everything a run makes lives in `design-lab/<date>-<slug>/` inside the project: the fence, the list, the jury, the board, the comps and a short log of what the method did well or badly.
+Everything a run makes lives in `design-lab/<date>-<slug>/` inside the project: the fence, the list, the jury, the board, the comps or the prototype and a short log of what the method did well or badly.
+
+## Three modes
+
+The fence picks the mode from the surface, and the mode changes what an idea is, how it is judged and how it is shown.
+
+| | Persuade | Operate | Identity |
+|---|---|---|---|
+| Surface | landing, hero, campaign, OG image | app screen, admin, storefront, widget | logo, wordmark, app icon, favicon |
+| An idea is | a picture and a three-beat moment | a behaviour: what opens where, what the screen does unasked, what it refuses, what stays visible | a mark |
+| The jury doubles | WANT (do they want the product more) | DONE (does the task end sooner); OWN counts behaviour, or a look made of the product's own material when the fence frees it, never a borrowed look | READ (recognised in a second at 16 px) |
+| Shown as | motion comps | one prototype, each idea a switch, verdicts per feature | sheets at three sizes, in a real tray or tab strip |
+
+A working component on a selling page (a flight search widget, a calculator) is a hybrid: its first three seconds are judged as Persuade, its fields and states as Operate.
+
+## How Muse learns
+
+A skill cannot be trained, but it can read. Two files in the skill folder grow with every run and are read at the start of the next: `taste.md`, the owner's standing preferences in their own words, which become soft locks and list quotas; and `record.md`, every idea the owner was shown with the jury's score and the owner's verdict, which gives the next jury six anchors of the same mode (three picked, three rejected) so it scores like this owner rather than like itself. A calibration line per run says whether the owner's pick was in the jury's featured set; five of those show where a rubric disagrees with the owner.
 
 ---
 
@@ -132,7 +149,7 @@ Copy-Item -Recurse muse-skill\muse "$HOME\.claude\skills\muse"
 
 Then, in a project, ask for a design direction ("make this hero less generic", "explore concepts for the pricing page") or type `/muse <target>`.
 
-Before your first run, open `muse/taste.md` and delete the invented example lines. Muse adds your own reactions there as you go.
+Before your first run, open `muse/taste.md` and `muse/record.md` and delete the invented example lines. Muse adds your own reactions and verdicts there as you go.
 
 ## Requirements
 
@@ -147,14 +164,18 @@ Before your first run, open `muse/taste.md` and delete the invented example line
 muse/                     the skill — copy this folder to ~/.claude/skills/
   SKILL.md                the flow and the two rules that outrank everything
   taste.md                the owner's standing preferences (a template)
+  record.md               what the owner did with earlier ideas; the jury's anchors (a template)
   references/
-    fence.md              locks, principles, audience, truths, clichés
-    ideation.md           wide list, seeds, jury, idea board, comps, brief
+    fence.md              locks, principles, audience, truths, clichés, the mode
+    ideation.md           wide list, seeds, jury, idea board, comps, brief (Persuade)
+    operate.md            working surfaces: behaviours, the DONE rubric, one prototype with switches
+    identity.md           marks: the READ rubric, sheets at three sizes
     render.md             physical products in Blender, sequences, three.js
     comp-brief.md         the shared brief every comp agent gets
     critic.md             one fresh critic round, on request after that
     finish.md             restraint pass, tells, verification, handoff
 examples/lanework/        the full example run: fence, list, jury, board, comps
+evals/                    the 1.2 jury replayed against six earlier runs: the summary and the sheets
 ```
 
 ## Credits

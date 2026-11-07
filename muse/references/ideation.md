@@ -2,6 +2,8 @@
 
 Covers steps 1 to 3 of the flow. The goal is a direction the owner recognizes as theirs and a visitor wants to act on, not one the model liked best. Two findings shape this file. Chimala's, confirmed by Impeccable's measurements (30 of 35 runs shipped the same concept across 16 prompt framings): a model's ranking of its own ideas is deterministic. The owner's, from twelve runs: when the list is derived from the product's name and attributes, every entry is a costume (the page dressed as a day planner, a tide table, a tuning fork), the jury crowns the most literal costume, and the owner brings their own idea instead, which is always of another kind: the product in action, in motion, with the felt problem turning into the benefit in front of you. The list must contain that kind of idea before the owner has to supply it.
 
+This file is written for a Persuade surface. On an Operate or Identity target the idea types, the jury's rubric and the way directions are shown come from [operate.md](operate.md) or [identity.md](identity.md); the fence, the seeds, the blind jury procedure, the board, the reaction and the brief stay as here.
+
 ## 1. The wide list
 
 Ask for breadth across kinds, not depth in one. 20 to 25 directions, one line each.
@@ -43,6 +45,7 @@ The Moment has three beats or the entry is a mood, not an idea; "a calm page wit
 - Entry zero is the incumbent (the current page, or the page being beaten), written in the same shape and scored like the rest.
 - Entry one is the owner's picture, if they gave one, in the same shape, tagged `(owner)`.
 - Seeded entries are tagged `(seed)`. The tags are stripped before the jury sees the list.
+- At most four entries prove the same product truth. One strong fact pulls the whole list (the record has 8 of 24 entries on one truth); a truth that nobody uses is a bigger loss than a fifth entry on the favourite. The one exception: a truth that is the surface's single proof (the week of prices on a search widget) may carry more, and the list says so above the jury's input.
 
 ### Ambition templates
 
@@ -77,6 +80,8 @@ Twenty one-liners without pictures is a blind choice, and the author of the list
 
 Spawn one jury agent (`opus`, effort high) that did not write the list. Give it the fence (locks, principles, audience, truths, clichés), the bar references if any, and the entries in shuffled order without your numbering and without the `(seed)`, `(owner)` and `(taste)` tags. The incumbent is in the shuffle too, unmarked.
 
+Before the entries, give the jury up to six **anchors** from this skill's `record.md`, same mode, three the owner picked and three they rejected, each with the owner's words, under the heading "How this owner judged before". The jury scores the anchors first, for its own calibration; their scores stay out of the report. A model's taste is its own; the anchors make the scores this owner's.
+
 The jury reads every entry twice, in two roles, and scores:
 
 1. As the person from the AUDIENCE block, after the first viewport:
@@ -91,7 +96,7 @@ The jury reads every entry twice, in two roles, and scores:
 
 Total = 2×WANT + CLEAR + OWN + TALK − PENALTY (maximum 25). Entries that fail PRINCIPLES or VIABLE are listed but cannot be featured.
 
-The jury also writes one block, **What is missing**: what kind of idea the list over-represents, what it lacks (a truth no entry uses, a fear no entry answers with proof, a moment no entry shows), and which entries only a rival could not stage. The orchestrator reads it before the board and feeds it to any re-roll.
+The jury also writes one block, **What is missing**: what kind of idea the list over-represents, what it lacks (a truth no entry uses, a fear no entry answers with proof, a moment no entry shows), and which entries only a rival could not stage. The orchestrator reads it before the board and feeds it to any re-roll. Each point of the block is also a finding that must not be lost when no re-roll happens: when the project keeps a coverage file for the idea (a list of everything the sources ask for, each with an answer — shown, waits for data, decided elsewhere, not doing), every point becomes a row there; otherwise it goes into `brief.md` under "Not covered", with what would cover it. A data gap the jury names (a recording that does not exist yet) is answered by recording it, not by dropping the entries that need it.
 
 Featured = the top three or four by total with **no two of the same idea type**; ties break by dice. If no entry beats the incumbent on WANT, the list is re-rolled before the board is made; the owner is told it happened. The owner's picture, if any, is scored for information and stays featured regardless. The jury's scores stay in the lab folder (`jury.md`); the board shows the featured set and the rest as a list. The owner may promote any listed entry to a card, and that promotion outranks the jury.
 
@@ -102,12 +107,15 @@ Present step 1 as a page (`ideas.html` in the lab folder, local; publish only if
 1. The fence in two columns: locks and principles; audience, truths and free axes. The clichés in one line underneath.
 2. Featured cards, three or four, plus the owner's card when there is one, plus two riffs on the owner's picture (the same desire, a different idea type). Each card leads with the hook and the Want line, then the three beats of the moment, then a **moment strip**: three frames (before / during / after) of the first viewport at 1440 and one frame at 390, drawn on the project's tokens, with the product shown as its preview render (render.md) rather than a grey block. It is a plan of the stage, not a mockup: no real copy beyond the H1 and the CTA label. A `P` entry shows its photo slot as a neutral rectangle with the shot caption.
    Each card also lists the **assets the comp would need** (a sequence from which camera, a `.glb`, a screen texture, a photo), so the render pass can start the moment the owner picks. A `P` entry whose photograph is the emotional core (a face, a person's reaction, a hand doing the gesture) is flagged "cannot be judged as a moment until the photo exists": it gets a stand-in image before its comp (the owner's photo, an image tool, a reference used locally), or the owner decides whether to spend a comp on it. On the board the device carries such a card; in the comp it does not.
-3. The remaining entries as a numbered list with their type and hook, each with a "show" checkbox. Checked entries get their card drawn on the next version of the page.
+3. Every other entry that passed PRINCIPLES and VIABLE (the featured ones already have their strips), as a numbered list with its type, its hook and **one frame** of its first viewport at 1440, built the same way as the strips (a sonnet agent, from the tokens, the product as its render). Twenty one-liners are a blind choice: the record has 17 of 21 entries shown as a line each, so promotion from the list was blind. Each entry has a "show" checkbox; checked entries get a full card on the next version of the page. Entries that failed a gate are listed last, without a frame, with the reason.
 4. A re-roll control: when the owner asks for it, every shown entry is dropped and a new list is made; after two consecutive re-rolls ask what quality is missing.
+5. A **combine** control: the owner marks parts of several entries. The parts are the entry's own fields: the hook, the picture, the moment, the proof, and on an operate surface the gesture (the one gesture or the three-beat moment). The next version of the page shows the combination as a card tagged `(combined)`: its strip is drawn by the board agent from the marked parts, its score line reads "combined from #n, #m" until the jury scores it for information, and the brief carries "Combined from: #n, #m". Owners combine more often than they pick: four runs of nine on record.
 
-Do not recommend on the board. Featured means "the jury scored it", not "the author likes it"; say so in one line on the page. Ask the owner for 2 to 4 picks and an optional one-line steer.
+Do not recommend on the board. Featured means "the jury scored it", not "the author likes it"; say so in one line on the page. Ask the owner for 2 to 4 picks, or a combination, and an optional one-line steer.
 
 ## 2. Comps and sketches
+
+On an Operate target this section is replaced by [operate.md](operate.md) §5: the picks become a feature list and one prototype with switches. On an Identity target it is replaced by [identity.md](identity.md) §4: mark sheets. What follows is the Persuade path.
 
 **Render pass for the picks.** As soon as the owner picks, list the assets each pick needs (the card already names them) and render them before the comps: every direction that moves the object gets its own sequence from its own camera, with that scene's screen content; a direction that the visitor operates gets the `.glb`; a direction that shows a specific screen gets that texture. One shared sequence is not enough: a cross-dissolve between two poses from different cameras reads as a swap, not a fold. A comp that needs nothing new starts at once.
 
@@ -129,6 +137,7 @@ Sort the reactions:
 
 - **Generalizable** ("cartoony reads as tacky to me", "I like density that resolves into one quiet moment", "no faux-3D") goes to `taste.md` in this skill's folder, one line each, dated, with the project it came from.
 - **Specific to this target** goes to `brief.md`.
+- **Verdicts on the shown entries** (picked, combined into what, rejected with the words, unpicked) go to this skill's `record.md` at the finish step; they are the next run's anchors.
 
 Then sharpen the winning direction and write the brief.
 
@@ -142,6 +151,9 @@ One idea this surface owns, and the category default it refuses.
 
 ## Idea type and moment
 The type from the list. The three beats (before / during / after) with durations.
+
+## Combined from
+Entry numbers and which part of each (hook, moment, proof, gesture), when the owner combined. Otherwise "one entry: #n".
 
 ## Audience line and truth
 Which line of the AUDIENCE block this joins to which PRODUCT TRUTH.
@@ -171,6 +183,9 @@ Renders, sequences, photos needed (shot list), with paths or owners.
 
 ## Memory test
 If someone left after one viewport, what would they describe an hour later? (If the answer is a mood, the brief is not done.)
+
+## Not covered
+Every point of the jury's "What is missing" that this direction does not answer, with what would cover it (a section, a later run, a recording, a decision). Nothing from that block is dropped silently.
 
 ## Open
 Anything the owner still has to decide.

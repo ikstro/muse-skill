@@ -1,0 +1,55 @@
+# Jury sheet: Altype main window (Operate, blind replay)
+
+Jury: fresh agent, Operate rubric (operate.md 1-3), procedure from ideation.md "The jury". Inputs read: operate.md, ideation.md (The jury), fence.md, jury-input.md. Nothing else.
+Reader in role 1: the RU/UK-speaking designer or developer from AUDIENCE, mid-afternoon, who just opened the Altype window because something about a key, a word or a fix needs attention. Role 2: product design lead.
+Surface reading: the fence says the big window is the back office, not the product; entries that turn the window into an ad are scored on what they let the user finish, not on what they sell.
+
+Total = 2xDONE + CLEAR + TRUST + OWN - PEN (max 25). FIT / RULES "no" = listed, cannot be featured.
+
+| code | type (as written) | operate type | hook | DONE | CLEAR | TRUST | OWN | PEN | FIT | RULES | total | DONE line (user's words) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| P | demonstration | one gesture (and the handoff into the real card) | «Try it right here»: a sample with a selection drawn, "press ⇧ ⇧", the real translator opens; five checks fill | 4 | 4 | 4 | 3 | 0 | yes | yes | 19 | "I pressed the real key once and now I know it; no manual, no hotkey list." |
+| J | ritual / reveal | one gesture | «Teach it your keys»: first launch, press the key you want for each action, ends in a working sample | 4 | 5 | 4 | 3 | 1 | yes | yes | 19 | "I set my keys by pressing them, not by reading ten hotkeys, and I landed straight in something that works." |
+| H | metaphor world | what stays visible | «Status console»: one mono line per action with its key and engine state; tap opens a sheet | 4 | 4 | 5 | 3 | 1 | yes | **no** (configures in a sheet; the fence bans sheets, details grow from the tapped row) | 19 | "I see in one glance which key does what and that dictate isn't downloaded yet." |
+| K | copy-led | what stays visible | «Select. ⇧⇧. Done.»: three display lines ending in their keycaps; tap one opens its key field and a live sample | 4 | 5 | 3 | 2 | 0 | yes | yes | 18 | "My keys are right there when I open it; the one I forgot is one tap away." (TRUST 3: three lines, but the product has six-plus actions; where are the rest?) |
+| F | transformation | what can be undone | «Type, don't check»: a field where you type "ghbdtn", it fixes on space, Backspace takes it back | 3 | 5 | 4 | 2 | 0 | yes | yes | 18 | "Now I know what it does when I type in the wrong layout, and that Backspace undoes it." (OWN 2: Punto-class tools fix the same way) |
+| U | demonstration | where the answer opens | «The palette, not the window»: tray click opens a field + six actions with keys at the pointer; Enter translates | 4 | 4 | 4 | 2 | 0 | yes | yes | 18 | "I type a phrase and get the English right there, without opening a DeepL tab." |
+| T | demonstration | where the answer opens | «Your keyboard, upgraded»: a half-size keyboard strip with only Altype's keys lit; tap a key, its action plays on the sample | 4 | 4 | 4 | 3 | 1 | yes | yes | 18 | "All my keys on one strip, and I can see what each one does to a sentence." (PEN 1: a keyboard drawing in place of a list; double taps and mouse buttons don't sit on a strip) |
+| M | copy-led | what stays visible | «Your language. Your shortcut.»: the tagline splits the window into language settings and keys | 4 | 4 | 4 | 2 | 0 | yes | yes | 18 | "Everything I have to decide is on one screen: my language, my keys." |
+| C | enemy / tension | what can be undone | «No more ghbdtn»: today's fixes newest first with the program, keep/undo on each | 3 | 4 | 3 | 4 | 0 | yes | yes | 17 | "I see what it fixed behind my back, and the one it got wrong I tell it to leave alone." (TRUST 3: a per-program list of what I typed is exactly the "keylogger" fear unless it proves it stays local) |
+| A | demonstration | what it does unasked | «Words that stay»: opens on the notebook, last saved word on top with its sentence and play | 3 | 4 | 4 | 3 | 0 | yes | yes | 17 | "The word I saved this morning is on top, with the sentence it came from." (close to the incumbent, which also opens Words first) |
+| I | enemy / tension | what it refuses (made visible) | «Only what's on this computer»: the local parts with size and folder, "Nothing leaves this computer" | 2 | 4 | 5 | 4 | 0 | yes | yes | 17 | "Good, it's all on my disk; but I opened the window to change a key." |
+| V | moment of use | what it does unasked | «Keep listening»: the window resumes the last English text with play/stop and starred words | 3 | 4 | 3 | 3 | 0 | yes | yes | 16 | "My listening practice picks up where I stopped." (TRUST 3: keeps the texts I read in other programs; turns the window into a reader, against "back office") |
+| G | ritual / reveal | where the answer opens | «The tray popover»: a designed tray panel of action tiles with keycaps, voice and speed strip | 3 | 4 | 3 | 2 | 0 | yes | yes | 15 | "I can start anything from the tray and see its key while I do." (TRUST 3: clicking the tray takes focus from the program, so the selection tiles may act on nothing) |
+| Q | moment of use | one gesture | «Hand on the mouse»: the Shift keys and a mouse side button at life size, each bound to its action | 3 | 3 | 4 | 3 | 1 | yes | yes | 15 | "I put Listen on my mouse button and never take my hand off it." |
+| R | transformation | none (a demo loop) | «ghbdtn → привет → hello → 🔊»: one line runs through fix, translate, read aloud in four seconds | 2 | 3 | 4 | 4 | 1 | yes | yes | 14 | "Nice, it does all of that; I still have to find where to set each one." |
+| W | product as object | one gesture | «Fix»: one big fix keycap and "ghbdtn vbh"; press, it retypes, the badge flips | 2 | 4 | 4 | 3 | 1 | yes | yes | 14 | "I get what Pause does; the rest of the app isn't here." |
+| N | product as object | what stays visible (one key drawing everywhere) | «The keycap family»: each action's keycap glyph on Home, tray, cards, badge; tap one, its page slides up | 3 | 4 | 4 | 1 | 1 | yes | **no** (page slides up; the fence: the tapped item grows into the page, title and key stay put) | 14 | "The same key picture everywhere, so I recognise my shortcut." (OWN 1: a drawing system; glyphs must follow my rebinding, not be fixed) |
+| L | transformation | where the answer opens | «The keyboard map»: Settings as a full keyboard and mouse; tap a key, a sheet assigns it | 3 | 3 | 4 | 2 | 1 | yes | **no** (assigns in a sheet) | 14 | "I see all my shortcuts on one map, if I can find Shift-twice on it." |
+| S | scale / impossible fact | what it counts for you | «32 languages. 0 bytes sent.»: display fact, engines with sizes, a live network line at 0 | 2 | 4 | 3 | 4 | 1 | yes | yes | 14 | "Reassuring, but I came to do something." (TRUST 3: a live network figure I cannot verify, and it moves the day a model downloads) |
+| B | moment of use | the handoff | «The card grows from the selection»: the selected text lifts into the card, the translation flies back on Enter | 2 | 4 | 3 | 3 | 1 | yes | yes | 13 | "I see where the translation went." (off this surface: it is the card; the selection rectangle is not known in every program, so the flight can miss) |
+| O | moment of use | none (a demo loop) | «In the chat, 11:42»: a looping Telegram-like chat showing select, ⇧⇧, Enter | 2 | 4 | 3 | 3 | 1 | yes | yes | 13 | "I get the trick; the loop doesn't help me do anything now." |
+| D | scale / impossible fact | none | «Everywhere.»: a slowly scrolling strip of programs, each showing the card | 1 | 3 | 3 | 2 | 1 | yes | yes | 9 | "Nothing changed for me; it's an ad inside my settings." |
+| E | listing | none (incumbent) | «2Talker»: 640x620 window, tabs Words · Settings · How to use · About, keys in a long Settings column | 1 | 2 | 3 | 1 | 0 | yes | **no** (old name 2Talker; keys not shown with their actions) | 8 | "I can find the key I forgot if I scroll through Settings long enough." |
+| X | identity / social | none (a look) | «Two languages, one surface»: every surface split by a vertical seam, yours left, English right | 1 | 2 | 3 | 1 | 2 | yes | **no** (the Listen card is locked as English on top, translation under it) | 6 | "Pretty, but nothing got quicker." |
+| Y | product as object | none (a costume) | «The alt key»: one big "alt" keycap with real key travel, sections as smaller keycaps | 1 | 2 | 4 | 0 | 2 | yes | yes | 6 | "It looks like a key; I still have to find my setting." |
+
+## Featured
+
+On this surface the featured entries are not rivals for one slot; most of them can live together as features of one window.
+
+1. **P · 19 · demonstration (one gesture)**: the user learns the real key on the real card inside the window; answers "ten hotkeys to remember" by doing, and is the fence's own "try it right here" mechanic.
+2. **J · 19 · ritual / reveal (one gesture)**: binding by pressing removes the hotkey-list chore at the one moment it matters; keep it skippable, defaults already exist (PEN 1 for the extra step).
+3. **K · 18 · copy-led (what stays visible)**: the user's own keys are the first thing on screen, and the forgotten one opens in place; extend it to every action, not three.
+4. **F · 18 · transformation (what can be undone)**: the only entry that shows the layout fix and its undo on the user's own typing; builds trust in an automatic behaviour.
+
+Same-total entries left out by type: U and T (demonstration, as P), M (copy-led, as K). U is the strongest of these and worth promoting as a tray feature; it does not compete with P.
+
+## What is missing
+
+- **Over-represented**: first-view pitches written for a landing page (D, O, R, S, W, X, Y, partly B and I): seven of twenty-five sell the product inside a window the user already owns. The fence calls the window the back office; the persuade-era types produced heroes, not tasks.
+- **Lacks**: an entry for the screen source (Ctrl+Alt+S / Ctrl+Alt+T on video subtitles, an AUDIENCE moment no entry stages); Dictate's "coming" state and the tap vs hold distinction; the direction rule (yours → English, any other → yours) shown as something computed for the user rather than set.
+- **A state no entry handles**: a key conflict while binding (the key is already taken by another action, the system or another program), and the hook not acting (paused, or the front program runs elevated and the key does nothing). Also an engine not yet downloaded or downloading (only H shows it, and H fails RULES), and the empty notebook before the first saved word.
+- **A fence rule no entry makes visible**: "details open from what was tapped: the row grows into the page, title and key stay where they are, Back and Esc fold it back". No entry stages it; H, L and N contradict it with sheets or pages that slide up.
+- **Only a rival could not stage**: C (the day's fixes), H (engine readiness per action), I and S (local engines with sizes), R (fix → translate → listen on one line). None of them made the featured set.
+- **Re-roll note**: H without the sheet (each status line grows into its page) would tie for first; it is the only entry that joins keys, readiness and "offline" in one working view.

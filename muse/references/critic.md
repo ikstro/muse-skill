@@ -13,11 +13,13 @@ Only these, nothing else:
 1. The current screenshots (1440 and 390, full page or the section under work) and the contact sheet of the signature moment.
 2. The locks package and the PRINCIPLES from `fence.md`, verbatim, under the heading "These are decided; do not propose changing them."
 3. The AUDIENCE block from `fence.md`.
-4. The tells list from [finish.md](finish.md) (section "Tells").
+4. The tells list from [finish.md](finish.md): the general blocks plus the block for this run's mode (Persuade, Operate or Identity).
 5. Quality references if the owner provided any (the bar from `refs/`): framed as the bar, never as something to copy.
 6. The brief's thesis, idea type, moment and first-viewport blocks. Not the rest of the brief, not the contract, not the code.
 
 Never pass: source, the previous rounds' critiques, the builder's notes, your own opinion of the current state.
+
+On an **Operate** target the package changes in three places ([operate.md](operate.md) §6): instead of one contact sheet, a frame strip of each feature's moment and the state shots (empty, mid-task, error); the fence's RULES under "These are decided"; and the studio question becomes "how would the best working tool in this category execute this exact flow inside these decisions". The critic judges the task first (can the user finish, where would they hesitate, what surprises them) and the look second. On an **Identity** target the critic receives the sheets at 128, 32 and 16 px and judges at 16 first ([identity.md](identity.md) §5).
 
 ## The critic's prompt
 
@@ -58,7 +60,7 @@ OUTSIDE MY BRIEF: (optional, one line)
 
 ## The round
 
-1. Screenshot the current state to `shots/round-<n>-{1440,390}.png`; record the moment and lay it out as `shots/round-<n>-moment.png`.
+1. Screenshot the current state to `shots/round-<n>-{1440,390}.png`; record the moment and lay it out as `shots/round-<n>-moment.png` (on Operate: one strip per feature, `shots/round-<n>-<feature>.png`, plus the state shots).
 2. Spawn the critic with the package above.
 3. Append the full critique to `critic-log.md` under `## Round n — score x/10`.
 4. Report to the owner. If they ask for fixes: hand the gaps to the builder (same builder agent, or the orchestrator if the build is small) with the instruction to fix them without opening new fronts. A fix that requires moving a lock or breaking a principle is refused and noted.
